@@ -1,0 +1,10 @@
+.idea
+###> symfony/framework-bundle ###
+/app/api/.env.local
+/app/api/.env.local.php
+/app/api/.env.*.local
+/app/api/config/secrets/prod/prod.decrypt.private.php
+/app/api/public/bundles/
+/app/api/var/
+/app/api/vendor/
+###< symfony/framework-bundle ###
