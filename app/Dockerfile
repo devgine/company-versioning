@@ -19,6 +19,9 @@ RUN apk add --no-cache icu-dev \
   && docker-php-ext-install opcache \
   && docker-php-ext-enable opcache
 
+### MYSQL DRIVER
+RUN docker-php-ext-install pdo pdo_mysql mysqli
+
 COPY .docker/php/symfony.ini /usr/local/etc/php/conf.d/
 ### END SYMFONY REQUIREMENT
 

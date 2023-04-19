@@ -8,8 +8,8 @@ services:
       - '80:80'
       - '443:443'
     volumes:
-      - './api/app/public:/var/www/app/public:ro'
-      - './api/.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf'
+      - './app/api/public:/var/www/app/public:ro'
+      - './app/.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf'
     depends_on:
       - php
 
@@ -18,16 +18,16 @@ services:
     depends_on:
       - db
     build:
-      context: ./api
+      context: ./app
     ports:
       - '9000:9000'
     volumes:
-      - './api/app:/var/www/app'
+      - './app/api:/var/www/app'
 
   db:
     container_name: company-versioning-db
-    image: mariadb:10.11
-    restart: always
+    image: mariadb:10.11.2
+    restart: on-failure
     command: [ '--default-authentication-plugin=mysql_native_password' ]
     volumes:
       - 'mariabd_data:/var/lib/mysql'
@@ -36,6 +36,8 @@ services:
       MARIADB_DATABASE: symfony
       MARIADB_USER: app_user
       MARIADB_PASSWORD: app_password
+    ports:
+      - '3306:3306'
 
 volumes:
   mariabd_data:
