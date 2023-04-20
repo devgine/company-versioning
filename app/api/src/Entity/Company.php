@@ -12,7 +12,7 @@ class Company extends AbstractEntity
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $sirenNumber = null;
 
     #[ORM\Column(length: 255, nullable: false)]

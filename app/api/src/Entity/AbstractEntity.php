@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 class AbstractEntity
 {
@@ -11,9 +12,11 @@ class AbstractEntity
     #[ORM\Column(type: 'integer')]
     protected ?int $id;
 
+    #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: 'datetime', nullable: false)]
     protected ?\DateTimeInterface $createdDate;
 
+    #[Gedmo\Timestampable(on: 'update')]
     #[ORM\Column(type: 'datetime', nullable: false)]
     protected ?\DateTimeInterface $lastUpdateDate;
 
