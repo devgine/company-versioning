@@ -42,7 +42,7 @@ install-local: ## Install project on dev local project
 ##
 ## Symfony commands
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: composer console migration
+.PHONY: composer console migration data-fixtures
 
 composer: ## Run composer in php container.
 	$(EXEC) composer $(filter-out $@,$(MAKECMDGOALS))
@@ -52,6 +52,9 @@ console: ## Run symfony console in php container.
 
 migration: ## Execute doctrine migration.
 	$(EXEC) bin/console doctrine:migration:migrate -n
+
+data-fixtures: ## Execute doctrine fixtures.
+	$(EXEC) bin/console doctrine:fixtures:load -n
 
 ##
 ## Tests

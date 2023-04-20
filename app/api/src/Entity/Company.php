@@ -5,22 +5,29 @@ namespace App\Entity;
 use App\Repository\CompanyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
+#[Gedmo\Loggable(logEntryClass: CompanyVersion::class)]
 class Company extends AbstractEntity
 {
+    #[Gedmo\Versioned]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $name = null;
 
+    #[Gedmo\Versioned]
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $sirenNumber = null;
 
+    #[Gedmo\Versioned]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $registrationCity = null;
 
+    #[Gedmo\Versioned]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: false)]
     private ?\DateTimeInterface $registrationDate = null;
 
+    #[Gedmo\Versioned]
     #[ORM\Column(type: Types::FLOAT, nullable: false)]
     private ?float $capital = null;
 
