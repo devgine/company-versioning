@@ -53,7 +53,7 @@ class CompanyController extends AbstractController
         strict: true,
         nullable: true
     )]
-    #[Rest\Get(name: 'api_v1_get_companies_collection')]
+    #[Rest\Get(name: 'api_v1_companies_get_collection')]
     public function getCollection(ParamFetcher $paramFetcher): JsonResponse
     {
         $start = $paramFetcher->get('_start');
@@ -71,7 +71,7 @@ class CompanyController extends AbstractController
                 offset: $start
             ),
             headers: ['X-Total-Count' => $this->em->getRepository(Company::class)->total($search)],
-            context: ['groups' => 'get']
+            context: ['groups' => ['get', 'get-company', 'get-company-addresses']]
         );
     }
 
@@ -83,7 +83,7 @@ class CompanyController extends AbstractController
             throw new NotFoundHttpException('Company not found.');
         }
 
-        return $this->json(data: $company, context: ['groups' => 'get']);
+        return $this->json(data: $company, context: ['groups' => 'get-company', 'get-company-addresses']);
     }
 
     #[Rest\Delete(path: self::ID_IN_PATH, name: 'api_v1_companies_delete')]
@@ -104,17 +104,17 @@ class CompanyController extends AbstractController
         $company = $this->denormalizer->denormalize(
             data: $request->request->all(),
             type: Company::class,
-            context: ['groups' => ['set']]
+            context: ['groups' => ['set-company']]
         );
 
-        if (null !== $violations = $this->validator->validate(object: $company, groups: 'set')) {
+        if (null !== $violations = $this->validator->validate(object: $company, groups: 'set-company')) {
             throw new BadRequestHttpException(json_encode($violations));
         }
 
         $this->em->persist($company);
         $this->em->flush();
 
-        return $this->json(data: $company, status: Response::HTTP_CREATED, context: ['groups' => 'get']);
+        return $this->json(data: $company, status: Response::HTTP_CREATED, context: ['groups' => ['get', 'get-company', 'get-company-addresses']]);
     }
 
     #[Rest\Put(path: self::ID_IN_PATH, name: 'api_v1_companies_put')]
@@ -129,19 +129,19 @@ class CompanyController extends AbstractController
             data: $request->request->all(),
             type: Company::class,
             context: [
-                'groups' => ['set'],
+                'groups' => ['set-company'],
                 AbstractNormalizer::OBJECT_TO_POPULATE => $company,
                 AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true
             ]
         );
 
-        if (null !== $violations = $this->validator->validate(object: $company, groups: 'set')) {
+        if (null !== $violations = $this->validator->validate(object: $company, groups: ['set-company'])) {
             throw new BadRequestHttpException(json_encode($violations));
         }
 
         $this->em->persist($company);
         $this->em->flush();
 
-        return $this->json(data: $company, context: ['groups' => 'get']);
+        return $this->json(data: $company, context: ['groups' => ['get', 'get-company', 'get-company-addresses']]);
     }
 }

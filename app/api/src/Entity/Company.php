@@ -15,45 +15,44 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Gedmo\Loggable(logEntryClass: CompanyVersion::class)]
 class Company extends AbstractEntity
 {
-    #[Assert\NotBlank(groups: ['set'])]
+    #[Assert\NotBlank(groups: ['set-company'])]
     #[Gedmo\Versioned]
-    #[Groups(groups: ['get', 'set'])]
+    #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $name = null;
 
-    #[Assert\NotBlank(groups: ['set'])]
+    #[Assert\NotBlank(groups: ['set-company'])]
     #[Gedmo\Versioned]
-    #[Groups(groups: ['get', 'set'])]
+    #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $sirenNumber = null;
 
-    #[Assert\NotBlank(groups: ['set'])]
+    #[Assert\NotBlank(groups: ['set-company'])]
     #[Gedmo\Versioned]
-    #[Groups(groups: ['get', 'set'])]
+    #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $registrationCity = null;
 
-    #[Assert\Type(type: 'datetime', groups: ['set'])]
+    #[Assert\Type(type: 'datetime', groups: ['set-company'])]
     #[Gedmo\Versioned]
-    #[Groups(groups: ['get', 'set'])]
+    #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: false)]
     private ?\DateTimeInterface $registrationDate = null;
 
-    #[Assert\NotBlank(groups: ['set'])]
-    #[Assert\Type(type: 'float', groups: ['set'])]
+    #[Assert\NotBlank(groups: ['set-company'])]
+    #[Assert\Type(type: 'float', groups: ['set-company'])]
     #[Gedmo\Versioned]
-    #[Groups(groups: ['get', 'set'])]
+    #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
     #[ORM\Column(type: Types::FLOAT, nullable: false)]
     private ?float $capital = null;
 
-    #[Assert\NotBlank(groups: ['set'])]
+    #[Assert\NotBlank(groups: ['set-company'])]
     #[Gedmo\Versioned]
-    #[Groups(groups: ['get', 'set'])]
+    #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $legalStatus = null;
 
-    #[Assert\NotBlank(groups: ['set'])]
-    #[Groups(groups: ['get'])]
+    #[Groups(groups: ['get-company-addresses'])]
     #[ORM\OneToMany(
         mappedBy: 'company',
         targetEntity: Address::class,

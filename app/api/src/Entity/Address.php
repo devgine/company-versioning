@@ -4,26 +4,49 @@ namespace App\Entity;
 
 use App\Repository\AddressRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
+#[Gedmo\Loggable(logEntryClass: AddressVersion::class)]
 class Address extends AbstractEntity
 {
+    #[Assert\NotBlank(groups: ['set-address'])]
+    #[Gedmo\Versioned]
+    #[Groups(groups: ['get-address', 'set-address', 'get-company-addresses'])]
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $number = null;
 
+    #[Assert\NotBlank(groups: ['set-address'])]
+    #[Gedmo\Versioned]
+    #[Groups(groups: ['get-address', 'set-address', 'get-company-addresses'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $streetType = null;
 
+    #[Assert\NotBlank(groups: ['set-address'])]
+    #[Gedmo\Versioned]
+    #[Groups(groups: ['get-address', 'set-address', 'get-company-addresses'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $streetName = null;
 
+    #[Assert\NotBlank(groups: ['set-address'])]
+    #[Gedmo\Versioned]
+    #[Groups(groups: ['get-address', 'set-address', 'get-company-addresses'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $city = null;
 
+    #[Assert\NotBlank(groups: ['set-address'])]
+    #[Gedmo\Versioned]
+    #[Groups(groups: ['get-address', 'set-address', 'get-company-addresses'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $zipCode = null;
 
+    #[Gedmo\Versioned]
+    #[Groups(groups: ['get-address-company', 'set-address'])]
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'addresses')]
     #[ORM\JoinColumn(
+        name: 'company_id',
         referencedColumnName: 'id',
         nullable: false,
         onDelete: 'cascade'
