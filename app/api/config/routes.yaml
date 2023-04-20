@@ -3,3 +3,17 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+api:
+    resource:
+        path: ../src/Controller/api/
+        namespace: App\Controller\Api
+    type: attribute
+    prefix: api
+
+api_v1:
+    resource:
+        path: ../src/Controller/api/v1
+        namespace: App\Controller\Api\V1
+    type: attribute
+    prefix: api/v1

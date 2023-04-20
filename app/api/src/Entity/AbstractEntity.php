@@ -4,19 +4,23 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 class AbstractEntity
 {
+    #[Groups(groups: ['get'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     protected ?int $id;
 
     #[Gedmo\Timestampable(on: 'create')]
+    #[Groups(groups: ['get'])]
     #[ORM\Column(type: 'datetime', nullable: false)]
     protected ?\DateTimeInterface $createdDate;
 
     #[Gedmo\Timestampable(on: 'update')]
+    #[Groups(groups: ['get'])]
     #[ORM\Column(type: 'datetime', nullable: false)]
     protected ?\DateTimeInterface $lastUpdateDate;
 

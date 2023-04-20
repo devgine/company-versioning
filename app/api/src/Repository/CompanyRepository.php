@@ -39,4 +39,52 @@ class CompanyRepository extends ServiceEntityRepository
         }
     }
 
+    public function search(
+        ?string $search = null,
+        ?string $order = null,
+        ?string $sort = null,
+        ?int $limit = 50,
+        ?int $offset = 0
+    ): array {
+        $qb = $this->createQueryBuilder('s');
+
+        if (null !== $search) {
+            $qb->where('s.name LIKE :search')
+                ->orWhere('s.url LIKE :search')
+                ->orWhere('s.description LIKE :search');
+
+            $qb->setParameter('search', '%'.$search.'%');
+        }
+
+        if (null !== $sort) {
+            $qb->orderBy(sprintf('s.%s', $sort), $order);
+        }
+
+        if (null !== $offset) {
+            $qb->setFirstResult($offset);
+        }
+
+        if (null !== $limit) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function total(?string $search = null): int
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb->select('count(s.id)');
+
+        if (null !== $search) {
+            $qb->where('s.name LIKE :search')
+                ->orWhere('s.url LIKE :search')
+                ->orWhere('s.description LIKE :search');
+
+            $qb->setParameter('search', '%'.$search.'%');
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

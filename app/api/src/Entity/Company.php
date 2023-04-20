@@ -6,28 +6,41 @@ use App\Repository\CompanyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[Gedmo\Loggable(logEntryClass: CompanyVersion::class)]
 class Company extends AbstractEntity
 {
+    #[Assert\NotBlank(groups: ['set'])]
     #[Gedmo\Versioned]
+    #[Groups(groups: ['get', 'set'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $name = null;
 
+    #[Assert\NotBlank(groups: ['set'])]
     #[Gedmo\Versioned]
+    #[Groups(groups: ['get', 'set'])]
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $sirenNumber = null;
 
+    #[Assert\NotBlank(groups: ['set'])]
     #[Gedmo\Versioned]
+    #[Groups(groups: ['get', 'set'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $registrationCity = null;
 
+    #[Assert\Type(type: 'datetime', groups: ['set'])]
     #[Gedmo\Versioned]
+    #[Groups(groups: ['get', 'set'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: false)]
     private ?\DateTimeInterface $registrationDate = null;
 
+    #[Assert\NotBlank(groups: ['set'])]
+    #[Assert\Type(type: 'float', groups: ['set'])]
     #[Gedmo\Versioned]
+    #[Groups(groups: ['get', 'set'])]
     #[ORM\Column(type: Types::FLOAT, nullable: false)]
     private ?float $capital = null;
 
