@@ -44,6 +44,12 @@ class Company extends AbstractEntity
     #[ORM\Column(type: Types::FLOAT, nullable: false)]
     private ?float $capital = null;
 
+    #[Assert\NotBlank(groups: ['set'])]
+    #[Gedmo\Versioned]
+    #[Groups(groups: ['get', 'set'])]
+    #[ORM\Column(length: 255, nullable: false)]
+    private ?string $legalStatus = null;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -100,6 +106,18 @@ class Company extends AbstractEntity
     public function setCapital(float $capital): self
     {
         $this->capital = $capital;
+
+        return $this;
+    }
+
+    public function getLegalStatus(): ?string
+    {
+        return $this->legalStatus;
+    }
+
+    public function setLegalStatus(?string $legalStatus): self
+    {
+        $this->legalStatus = $legalStatus;
 
         return $this;
     }
