@@ -21,6 +21,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 class CompanyController extends AbstractController
 {
     public const ID_IN_PATH = '/{id}';
+    public const GET_GROUPS = ['get', 'get-company', 'get-company-addresses'];
 
     public function __construct(
         protected EntityManagerInterface $em,
@@ -71,7 +72,7 @@ class CompanyController extends AbstractController
                 offset: $start
             ),
             headers: ['X-Total-Count' => $this->em->getRepository(Company::class)->total($search)],
-            context: ['groups' => ['get', 'get-company', 'get-company-addresses']]
+            context: ['groups' => self::GET_GROUPS]
         );
     }
 
@@ -83,7 +84,7 @@ class CompanyController extends AbstractController
             throw new NotFoundHttpException('Company not found.');
         }
 
-        return $this->json(data: $company, context: ['groups' => 'get-company', 'get-company-addresses']);
+        return $this->json(data: $company, context: ['groups' => self::GET_GROUPS]);
     }
 
     #[Rest\Delete(path: self::ID_IN_PATH, name: 'api_v1_companies_delete')]
@@ -114,7 +115,7 @@ class CompanyController extends AbstractController
         $this->em->persist($company);
         $this->em->flush();
 
-        return $this->json(data: $company, status: Response::HTTP_CREATED, context: ['groups' => ['get', 'get-company', 'get-company-addresses']]);
+        return $this->json(data: $company, status: Response::HTTP_CREATED, context: ['groups' => ['get', 'get-company']]);
     }
 
     #[Rest\Put(path: self::ID_IN_PATH, name: 'api_v1_companies_put')]
@@ -142,6 +143,6 @@ class CompanyController extends AbstractController
         $this->em->persist($company);
         $this->em->flush();
 
-        return $this->json(data: $company, context: ['groups' => ['get', 'get-company', 'get-company-addresses']]);
+        return $this->json(data: $company, context: ['groups' => self::GET_GROUPS]);
     }
 }
