@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CompanyRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -49,6 +51,20 @@ class Company extends AbstractEntity
     #[Groups(groups: ['get', 'set'])]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $legalStatus = null;
+
+    #[Assert\NotBlank(groups: ['set'])]
+    #[Groups(groups: ['get'])]
+    #[ORM\OneToMany(
+        mappedBy: 'company',
+        targetEntity: Address::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $addresses;
+
+    public function __construct()
+    {
+        $this->addresses = new ArrayCollection();
+    }
 
     public function getName(): ?string
     {
@@ -118,6 +134,36 @@ class Company extends AbstractEntity
     public function setLegalStatus(?string $legalStatus): self
     {
         $this->legalStatus = $legalStatus;
+
+        return $this;
+    }
+
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function setAddresses(Collection $addresses): self
+    {
+        $this->addresses = $addresses;
+
+        return $this;
+    }
+
+    public function addAddress(Address $address): self
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(Address $address): self
+    {
+        if ($this->addresses->contains($address)) {
+            $this->addresses->removeElement($address);
+        }
 
         return $this;
     }
