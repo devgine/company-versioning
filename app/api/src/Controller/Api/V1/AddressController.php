@@ -101,29 +101,6 @@ class AddressController extends AbstractController
         return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
     }
 
-    #[Rest\Post('/company/{id}', name: 'api_v1_addresses_create')]
-    public function create(Request $request, int $id): JsonResponse
-    {
-        if (null === $company = $this->em->find(Company::class, $id)) {
-            throw new NotFoundHttpException('Company not found.');
-        }
-
-        $address = $this->denormalizer->denormalize(
-            data: $request->request->all(),
-            type: Address::class,
-            context: ['groups' => ['set-address']]
-        );
-
-        if (null !== $violations = $this->validator->validate(object: $address, groups: 'set-address')) {
-            throw new BadRequestHttpException(json_encode($violations));
-        }
-
-        $this->em->persist($address->setCompany($company));
-        $this->em->flush();
-
-        return $this->json(data: $address, status: Response::HTTP_CREATED, context: ['groups' => 'get-address']);
-    }
-
     #[Rest\Post(name: 'api_v1_addresses_post')]
     public function post(Request $request): JsonResponse
     {

@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\VersionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Loggable\Entity\MappedSuperclass\AbstractLogEntry;
-use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
 
-#[ORM\Entity(repositoryClass: LogEntryRepository::class)]
+#[ORM\Entity(repositoryClass: VersionRepository::class)]
 #[ORM\Table(options: ['row_format' => 'DYNAMIC'])]
 #[ORM\Index(columns: ['object_class'], name: 'log_class_lookup_idx')]
 #[ORM\Index(columns: ['logged_at'], name: 'log_date_lookup_idx')]

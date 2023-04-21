@@ -14,7 +14,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Validator
 {
-
     public function __construct(
         protected ValidatorInterface $validator,
         protected ViolationFormatter $violationFormatter
