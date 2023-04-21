@@ -35,6 +35,9 @@ class CompanyController extends AbstractController
         name: 'search', description: 'Search', strict: true, nullable: true
     )]
     #[Rest\QueryParam(
+        name: 'q', description: 'Search', strict: true, nullable: true
+    )]
+    #[Rest\QueryParam(
         name: '_start', requirements: '\d+', default: 0, description: 'Start list', strict: true, nullable: true
     )]
     #[Rest\QueryParam(
@@ -61,7 +64,7 @@ class CompanyController extends AbstractController
         $end = $paramFetcher->get('_end');
         $order = $paramFetcher->get('_order');
         $sort = $paramFetcher->get('_sort');
-        $search = $paramFetcher->get('search');
+        $search = $paramFetcher->get('search') ?? $paramFetcher->get('q') ;
 
         return $this->json(
             data: $this->em->getRepository(Company::class)->search(
@@ -95,6 +98,7 @@ class CompanyController extends AbstractController
         }
 
         $this->em->remove($company);
+        $this->em->flush();
 
         return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
     }

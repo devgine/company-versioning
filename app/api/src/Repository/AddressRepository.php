@@ -39,28 +39,56 @@ class AddressRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Address[] Returns an array of Address objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function search(
+        ?string $search = null,
+        ?string $order = null,
+        ?string $sort = null,
+        ?int $limit = 50,
+        ?int $offset = 0
+    ): array {
+        $qb = $this->createQueryBuilder('s');
 
-//    public function findOneBySomeField($value): ?Address
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if (null !== $search) {
+            $qb->where('s.streetType LIKE :search')
+                ->orWhere('s.streetName LIKE :search')
+                ->orWhere('s.city LIKE :search')
+                ->orWhere('s.zipCode LIKE :search')
+                ->orWhere('s.description LIKE :search');
+
+            $qb->setParameter('search', '%'.$search.'%');
+        }
+
+        if (null !== $sort) {
+            $qb->orderBy(sprintf('s.%s', $sort), $order);
+        }
+
+        if (null !== $offset) {
+            $qb->setFirstResult($offset);
+        }
+
+        if (null !== $limit) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function total(?string $search = null): int
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb->select('count(s.id)');
+
+        if (null !== $search) {
+            $qb->where('s.streetType LIKE :search')
+                ->orWhere('s.streetName LIKE :search')
+                ->orWhere('s.city LIKE :search')
+                ->orWhere('s.zipCode LIKE :search')
+                ->orWhere('s.description LIKE :search');
+
+            $qb->setParameter('search', '%'.$search.'%');
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

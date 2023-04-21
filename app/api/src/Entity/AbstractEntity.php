@@ -12,7 +12,7 @@ class AbstractEntity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    protected ?int $id;
+    protected ?int $id = null;
 
     #[Gedmo\Timestampable(on: 'create')]
     #[Groups(groups: ['get'])]

@@ -40,11 +40,11 @@ class Company extends AbstractEntity
     private ?\DateTimeInterface $registrationDate = null;
 
     #[Assert\NotBlank(groups: ['set-company'])]
-    #[Assert\Type(type: 'float', groups: ['set-company'])]
+    #[Assert\Type(type: 'int', groups: ['set-company'])]
     #[Gedmo\Versioned]
     #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
-    #[ORM\Column(type: Types::FLOAT, nullable: false)]
-    private ?float $capital = null;
+    #[ORM\Column(type: Types::INTEGER, nullable: false)]
+    private ?int $capital = null;
 
     #[Assert\NotBlank(groups: ['set-company'])]
     #[Gedmo\Versioned]
@@ -113,12 +113,12 @@ class Company extends AbstractEntity
         return $this;
     }
 
-    public function getCapital(): ?float
+    public function getCapital(): ?int
     {
         return $this->capital;
     }
 
-    public function setCapital(float $capital): self
+    public function setCapital(?int $capital): self
     {
         $this->capital = $capital;
 

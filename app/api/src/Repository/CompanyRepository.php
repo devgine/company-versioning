@@ -50,8 +50,9 @@ class CompanyRepository extends ServiceEntityRepository
 
         if (null !== $search) {
             $qb->where('s.name LIKE :search')
-                ->orWhere('s.url LIKE :search')
-                ->orWhere('s.description LIKE :search');
+                ->orWhere('s.sirenNumber LIKE :search')
+                ->orWhere('s.registrationCity LIKE :search')
+                ->orWhere('s.legalStatus LIKE :search');
 
             $qb->setParameter('search', '%'.$search.'%');
         }
@@ -79,8 +80,9 @@ class CompanyRepository extends ServiceEntityRepository
 
         if (null !== $search) {
             $qb->where('s.name LIKE :search')
-                ->orWhere('s.url LIKE :search')
-                ->orWhere('s.description LIKE :search');
+                ->orWhere('s.sirenNumber LIKE :search')
+                ->orWhere('s.registrationCity LIKE :search')
+                ->orWhere('s.legalStatus LIKE :search');
 
             $qb->setParameter('search', '%'.$search.'%');
         }

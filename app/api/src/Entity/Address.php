@@ -51,7 +51,7 @@ class Address extends AbstractEntity
         nullable: false,
         onDelete: 'cascade'
     )]
-    private Company $company;
+    private ?Company $company = null;
 
     public function getNumber(): ?string
     {

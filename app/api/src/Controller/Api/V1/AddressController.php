@@ -7,6 +7,7 @@ use App\Entity\Company;
 use App\Validator\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +32,51 @@ class AddressController extends AbstractController
     {
     }
 
+    #[Rest\QueryParam(
+        name: 'search', description: 'Search', strict: true, nullable: true
+    )]
+    #[Rest\QueryParam(
+        name: '_start', requirements: '\d+', default: 0, description: 'Start list', strict: true, nullable: true
+    )]
+    #[Rest\QueryParam(
+        name: '_end', requirements: '\d+', default: 50, description: 'End list', strict: true, nullable: true
+    )]
+    #[Rest\QueryParam(
+        name: '_order',
+        requirements: '(ASC|DESC|asc|desc)',
+        default: 'ASC',
+        description: 'Order list',
+        strict: true,
+        nullable: true
+    )]
+    #[Rest\QueryParam(
+        name: '_sort',
+        description: 'Sort field',
+        strict: true,
+        nullable: true
+    )]
+    #[Rest\Get(name: 'api_v1_addresses_get_collection')]
+    public function getCollection(ParamFetcher $paramFetcher): JsonResponse
+    {
+        $start = $paramFetcher->get('_start');
+        $end = $paramFetcher->get('_end');
+        $order = $paramFetcher->get('_order');
+        $sort = $paramFetcher->get('_sort');
+        $search = $paramFetcher->get('search');
+
+        return $this->json(
+            data: $this->em->getRepository(Address::class)->search(
+                search: $search,
+                order: $order,
+                sort: $sort,
+                limit: $end - $start,
+                offset: $start
+            ),
+            headers: ['X-Total-Count' => $this->em->getRepository(Address::class)->total($search)],
+            context: ['groups' => self::GET_GROUPS]
+        );
+    }
+
     #[Rest\Get(path: self::ID_IN_PATH, name: 'api_v1_addresses_get')]
     #[Rest\Head(path: self::ID_IN_PATH, name: 'api_v1_addresses_head')]
     public function get(int $id): JsonResponse
@@ -50,12 +96,13 @@ class AddressController extends AbstractController
         }
 
         $this->em->remove($address);
+        $this->em->flush();
 
         return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
     }
 
-    #[Rest\Post('/company/{id}', name: 'api_v1_addresses_post')]
-    public function post(Request $request, int $id): JsonResponse
+    #[Rest\Post('/company/{id}', name: 'api_v1_addresses_create')]
+    public function create(Request $request, int $id): JsonResponse
     {
         if (null === $company = $this->em->find(Company::class, $id)) {
             throw new NotFoundHttpException('Company not found.');
@@ -64,10 +111,35 @@ class AddressController extends AbstractController
         $address = $this->denormalizer->denormalize(
             data: $request->request->all(),
             type: Address::class,
-            context: ['groups' => ['set-address', 'set']]
+            context: ['groups' => ['set-address']]
         );
 
         if (null !== $violations = $this->validator->validate(object: $address, groups: 'set-address')) {
+            throw new BadRequestHttpException(json_encode($violations));
+        }
+
+        $this->em->persist($address->setCompany($company));
+        $this->em->flush();
+
+        return $this->json(data: $address, status: Response::HTTP_CREATED, context: ['groups' => 'get-address']);
+    }
+
+    #[Rest\Post(name: 'api_v1_addresses_post')]
+    public function post(Request $request): JsonResponse
+    {
+        $address = $this->denormalizer->denormalize(
+            data: $request->request->all(),
+            type: Address::class,
+            context: ['groups' => ['set-address']]
+        );
+
+        $companyId = $request->request->all()['company_id'];
+
+        if (null === $company = $this->em->find(Company::class, $companyId)) {
+            throw new NotFoundHttpException('Company not found.');
+        }
+
+        if (null !== $violations = $this->validator->validate(object: $address, groups: ['set-address'])) {
             throw new BadRequestHttpException(json_encode($violations));
         }
 
