@@ -4,6 +4,7 @@ import { CompanyList, CompanyShow, CompanyEdit, CompanyCreate } from './resource
 import LinkIcon from '@mui/icons-material/Link';
 import { Dashboard } from './Dashboard';
 import { authProvider } from './security/authProvider';
+import {AddressCreate, AddressEdit, AddressList, AddressShow} from "./resources/Address";
 
 const fetchJson = (url: string, options: fetchUtils.Options = {}) => {
     const customHeaders = (options.headers ||
@@ -22,6 +23,7 @@ const dataProvider = jsonServerProvider(import.meta.env.VITE_API_V1_URL, fetchJs
 const App = () => (
     <Admin authProvider={authProvider} dataProvider={dataProvider} dashboard={Dashboard}>
         <Resource name='companies' list={CompanyList} show={CompanyShow} edit={CompanyEdit} create={CompanyCreate} icon={LinkIcon} />
+        <Resource name='addresses' list={AddressList} show={AddressShow} edit={AddressEdit} create={AddressCreate} icon={LinkIcon} />
     </Admin>
 );
 

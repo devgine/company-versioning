@@ -10,7 +10,9 @@ import {
     Create,
     useRecordContext,
     Show,
-    SimpleShowLayout, ShowButton, DateField
+    NumberInput,
+    AutocompleteInput,
+    SimpleShowLayout, ShowButton, DateField, ArrayField, ReferenceInput
 } from "react-admin";
 
 const companyFilters = [
@@ -19,7 +21,7 @@ const companyFilters = [
 
 const CompanyTitle = () => {
     const record = useRecordContext();
-    return <span>Site {record ? `"${record.name}"` : ''}</span>;
+    return <span>Company {record ? `"${record.name}"` : ''}</span>;
 };
 
 export const CompanyList = () => (
@@ -52,6 +54,17 @@ export const CompanyShow = () => (
             <DateField source='registrationDate' showTime />
             <DateField source='createdDate' showTime />
             <DateField source='lastUpdateDate' showTime />
+            <ArrayField source="addresses">
+                <Datagrid>
+                    <TextField source="number" />
+                    <TextField source="streetType" />
+                    <TextField source="streetName" />
+                    <TextField source="city" />
+                    <TextField source="zipCode" />
+                    <DateField source='createdDate' showTime />
+                    <DateField source='lastUpdateDate' showTime />
+                </Datagrid>
+            </ArrayField>
         </SimpleShowLayout>
     </Show>
 );
@@ -59,12 +72,14 @@ export const CompanyShow = () => (
 export const CompanyEdit = () => (
     <Edit title={<CompanyTitle />}>
         <SimpleForm>
-            <TextInput source='name' />
-            <TextInput source='sirenNumber' />
-            <TextInput source='capital' />
-            <TextInput source='legalStatus' />
-            <TextInput source='registrationCity' />
-            <DateTimeInput source='registrationDate' showTime />
+            <TextInput source='name' required />
+            <TextInput source='sirenNumber' required />
+            <NumberInput source='capital' required />
+            <ReferenceInput source="legalStatus" reference="legalStatuses" label="label" required >
+                <AutocompleteInput optionValue="label" optionText="label" />
+            </ReferenceInput>
+            <TextInput source='registrationCity' required />
+            <DateTimeInput source='registrationDate' required />
         </SimpleForm>
     </Edit>
 );
@@ -72,12 +87,14 @@ export const CompanyEdit = () => (
 export const CompanyCreate = () => (
     <Create>
         <SimpleForm>
-            <TextInput source='name' />
-            <TextInput source='sirenNumber' />
-            <TextInput source='capital' />
-            <TextInput source='legalStatus' />
-            <TextInput source='registrationCity' />
-            <DateTimeInput source='registrationDate' showTime />
+            <TextInput source='name' required />
+            <TextInput source='sirenNumber' required />
+            <NumberInput source='capital' required />
+            <ReferenceInput source="legalStatus" reference="legalStatuses" label="label" required >
+                <AutocompleteInput optionValue="label" optionText="label" />
+            </ReferenceInput>
+            <TextInput source='registrationCity' required />
+            <DateTimeInput source='registrationDate' required />
         </SimpleForm>
     </Create>
 );
