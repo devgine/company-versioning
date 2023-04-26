@@ -6,17 +6,28 @@ import {
     SimpleShowLayout,
     DateField,
     ArrayField,
-    RecordContextProvider
+    RecordContextProvider,
+    useNotify
 } from 'react-admin';
+import { isValid } from '../../helpers/Datetime'
 
 export const CompanyHistoryShow = (props) => {
     const {id, datetime} = props;
 
-    // todo validate datetime format
-    const { data, loading, error } = useGetOne(`companyHistories`, {id: `${id}/${datetime}`});
-    // todo catch error and display error alert
-    if (error) { console.log('useGetOne error');return null;}
+    const notify = useNotify();
+
+    let datetimeTz = isValid(datetime);
+
+    if (!datetimeTz) {
+        return notify(`CompanyHistoryShow: ${datetime} id not a valid datetime to fetch history`, {type: 'error'});
+    }
+
+    const { data, loading, error } = useGetOne(`companyHistories`, {id: `${id}/${datetimeTz}`}, {retry: 0});
+
     if (loading) { return <Loading />; }
+    if (error) {
+        return notify(`Could not load history: ${error.message}`, {type: 'error'});
+    }
 
     return (
         <RecordContextProvider value={data}>

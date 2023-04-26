@@ -1,10 +1,12 @@
 import { forwardRef } from 'react';
 
 export const TextInputRef = forwardRef((props, ref) => {
+    const {label, ...rest} = props
+
     return (
         <div>
-            <div><label>Datetime (format: yyyy-mm-dd hh:ii:ss)</label></div>
-            <div><input type='text' ref={ref} {...props} placeholder='yyyy-mm-dd hh:ii:ss' /></div>
+            <div><label>{label}</label></div>
+            <div><input type='text' ref={ref} {...rest} /></div>
         </div>
     )
 })

@@ -1,4 +1,5 @@
-export const DateTimeFormat = v => {
+
+export const DateTimeUTCFormat = v => {
     // v is a `Date` object 2023-04-20T22:27:37+00:00
     if (!(v instanceof Date) || isNaN(v)) return;
     const pad = '00';
@@ -31,3 +32,13 @@ export const DateTimeToday = () => {
 
     return `${year}-${month}-${day} 00:00:00`;
 };
+
+export const isValid = (datetime) => {
+    let timestamp = Date.parse(datetime);
+
+    if (!isNaN(timestamp)) {
+        return (DateTimeUTCFormat(new Date(timestamp)));
+    }
+
+    return false;
+}
