@@ -27,6 +27,7 @@ class CompanyHistoryController extends AbstractController
     {
     }
 
+    // todo add request requirement regex for id and datetime
     #[Rest\Get(path: self::ID_IN_PATH, name: 'api_v1_company_histories_get')]
     #[Rest\Head(path: self::ID_IN_PATH, name: 'api_v1_company_histories_head')]
     public function get(int $id, \DateTimeInterface $datetime): JsonResponse

@@ -8,7 +8,6 @@ import {
     DateField
 } from "react-admin";
 
-
 const companyFilters = [
     <TextInput source='search' alwaysOn />
 ];

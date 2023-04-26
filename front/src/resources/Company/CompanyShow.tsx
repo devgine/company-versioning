@@ -8,7 +8,7 @@ import {
     ArrayField
 } from 'react-admin';
 
-import CompanyHistory from './CompanyHistory'
+import CompanyHistory from './CompanyHistoryForm'
 
 const CompanyTitle = () => {
     const record = useRecordContext();
