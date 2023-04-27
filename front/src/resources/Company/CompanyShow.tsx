@@ -1,19 +1,15 @@
 import {
     Datagrid,
     TextField,
-    useRecordContext,
     Show,
     SimpleShowLayout,
     DateField,
     ArrayField
 } from 'react-admin';
 
-import CompanyHistory from './CompanyHistoryForm'
+import {CompanyTitle} from "./common";
 
-const CompanyTitle = () => {
-    const record = useRecordContext();
-    return <span>Company {record ? `"${record.name}"` : ''}</span>;
-};
+import CompanyHistory from './CompanyHistoryForm'
 
 export default () => (
     <Show title={<CompanyTitle />} aside={<CompanyHistory />}>

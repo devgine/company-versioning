@@ -3,16 +3,12 @@ import {
     SimpleForm,
     TextInput,
     DateTimeInput,
-    useRecordContext,
     NumberInput,
     AutocompleteInput,
     ReferenceInput
 } from "react-admin";
 
-const CompanyTitle = () => {
-    const record = useRecordContext();
-    return <span>Company {record ? `"${record.name}"` : ''}</span>;
-};
+import {CompanyTitle} from "./common";
 
 export default () => (
     <Edit title={<CompanyTitle />}>

@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import {
-    Show,
     SimpleForm,
     Toolbar,
     Button,
@@ -9,7 +8,7 @@ import {
     useNotify
 } from 'react-admin';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Card } from '@mui/material';
 
 import { TextInputRef } from '../../helpers/TextInputRef'
 import { CompanyHistoryShow } from './CompanyHistoryShow'
@@ -20,10 +19,11 @@ const HistoryFormToolbar = () => {
     const notify = useNotify();
 
     const handleClick = () => {
-        const datetime = document.getElementById('companyHistoryDatetimeSearch').value.trim()
+        const datetime: string | null = (document.getElementById('companyHistoryDatetimeSearch') as HTMLInputElement).value.trim();
 
-        if ('' === datetime) {
+        if ('' === datetime || null === datetime) {
             notify('Datetime should not be empty', { type: 'error' });
+
             return null;
         }
 
@@ -50,14 +50,14 @@ export default () => {
     return (
         <Box sx={{width: '40%', margin: '1em'}}>
             <Typography variant="h6">History</Typography>
-            <Show>
+            <Card>
                 <SimpleForm toolbar={<HistoryFormToolbar />}>
                     <TextInputRef label='Datetime' id='companyHistoryDatetimeSearch' ref={datetimeRef} />
                 </SimpleForm>
                 {datetimeRef.current && datetimeRef.current.value &&
-                    <CompanyHistoryShow id={recordId} datetime={datetimeRef.current.value} />
+                    <CompanyHistoryShow id={recordId} datetime={String(datetimeRef.current.value)} />
                 }
-            </Show>
+            </Card>
         </Box>
     );
 };

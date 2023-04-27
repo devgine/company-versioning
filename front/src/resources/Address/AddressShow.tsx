@@ -1,15 +1,10 @@
 import {
     TextField,
-    useRecordContext,
     Show,
     SimpleShowLayout,
     DateField
 } from "react-admin";
-
-const AddressTitle = () => {
-    const record = useRecordContext();
-    return <span>Address {record ? `"${record.name}"` : ''}</span>;
-};
+import { AddressTitle } from "./common";
 
 export default () => (
     <Show title={<AddressTitle />}>

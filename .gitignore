@@ -23,3 +23,5 @@
 /front/dist
 /front/dist-ssr
 /front/*.local
+
+/front/.eslintcache

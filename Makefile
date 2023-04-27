@@ -88,7 +88,7 @@ phpstan: ## Run phpstan analyses.
 	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon
 
 eslint: ## Run the ESLinter to sniff typescript code.
-	$(EXEC_NODE) yarn eslint .
+	$(EXEC_NODE) yarn eslint --cache --cache-location ./.eslintcache --color --quiet .
 
 ##
 ## Tests and Quality check
@@ -103,10 +103,13 @@ ci: ## Execute all tests and linters in a single command.
 ##
 ## Security checker
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: security-checker
+.PHONY: security-checker audit
 
 security-checker: ## Identify security flaws in PHP dependencies.
 	./local-php-security-checker --path=./symfony/composer.lock
+
+audit: ## Identify vulnerabilities in node packages.
+	$(EXEC_NODE) yarn audit
 
 ##
 ## Run SQL

@@ -10,8 +10,10 @@ import {
     useNotify
 } from 'react-admin';
 import { isValid } from '../../helpers/Datetime'
+import {CompanyHistoryRequestInterface} from "../../DTO/CompanyHistoryRequestInterface";
+import {UseGetOneResponseInterface} from "../../DTO/ClientResponseInterface";
 
-export const CompanyHistoryShow = (props) => {
+export const CompanyHistoryShow = (props: CompanyHistoryRequestInterface) => {
     const {id, datetime} = props;
 
     const notify = useNotify();
@@ -22,15 +24,19 @@ export const CompanyHistoryShow = (props) => {
         return notify(`CompanyHistoryShow: ${datetime} id not a valid datetime to fetch history`, {type: 'error'});
     }
 
-    const { data, loading, error } = useGetOne(`companyHistories`, {id: `${id}/${datetimeTz}`}, {retry: 0});
+    const companyResponse: UseGetOneResponseInterface = useGetOne(
+        `companyHistories`,
+        {id: `${id}/${datetimeTz}`},
+        {retry: 0}
+    );
 
-    if (loading) { return <Loading />; }
-    if (error) {
-        return notify(`Could not load history: ${error.message}`, {type: 'error'});
+    if (companyResponse.loading) { return <Loading />; }
+    if (companyResponse.error) {
+        return notify(`Could not load history: ${companyResponse.error.message}`, {type: 'error'});
     }
 
     return (
-        <RecordContextProvider value={data}>
+        <RecordContextProvider value={companyResponse.data}>
             <SimpleShowLayout emptyWhileLoading>
                 <TextField source='name' />
                 <TextField source='sirenNumber'/>

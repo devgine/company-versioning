@@ -1,14 +1,9 @@
 import {
     Edit,
     SimpleForm,
-    TextInput,
-    useRecordContext
+    TextInput
 } from "react-admin";
-
-const AddressTitle = () => {
-    const record = useRecordContext();
-    return <span>Address {record ? `"${record.name}"` : ''}</span>;
-};
+import { AddressTitle } from "./common";
 
 export default () => (
     <Edit title={<AddressTitle />}>

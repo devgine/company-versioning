@@ -33,7 +33,7 @@ export const DateTimeToday = () => {
     return `${year}-${month}-${day} 00:00:00`;
 };
 
-export const isValid = (datetime) => {
+export const isValid = (datetime: string) => {
     const timestamp = Date.parse(datetime);
 
     if (!isNaN(timestamp)) {
