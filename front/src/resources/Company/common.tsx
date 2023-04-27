@@ -1,6 +1,4 @@
-import {
-    useRecordContext
-} from "react-admin";
+import { useRecordContext } from 'react-admin';
 
 export const CompanyTitle = () => {
     const record = useRecordContext();

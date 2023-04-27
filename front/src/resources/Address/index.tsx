@@ -10,5 +10,5 @@ export default {
     show: AddressShow,
     create: AddressCreate,
     edit: AddressEdit,
-    icon: LinkIcon
+    icon: LinkIcon,
 };

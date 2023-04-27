@@ -109,8 +109,8 @@ ci-php: ## Execute tests and code quality for PHP container.
 	$(MAKE) phpstan
 
 ci-node: ## Execute tests and code quality for node container.
+	$(MAKE) prettier
 	$(MAKE) lint
-	$(MAKE) prettier-check
 
 ci: ## Execute all tests and linters in a single command.
 	$(MAKE) ci-php

@@ -5,22 +5,27 @@ import {
     DateTimeInput,
     NumberInput,
     AutocompleteInput,
-    ReferenceInput
-} from "react-admin";
+    ReferenceInput,
+} from 'react-admin';
 
-import {CompanyTitle} from "./common";
+import { CompanyTitle } from './common';
 
 export default () => (
     <Edit title={<CompanyTitle />}>
         <SimpleForm>
-            <TextInput source='name' required />
-            <TextInput source='sirenNumber' required />
-            <NumberInput source='capital' required />
-            <ReferenceInput source='legalStatus' reference='legalStatuses' label='label' required >
-                <AutocompleteInput optionValue='label' optionText='label' />
+            <TextInput source="name" required />
+            <TextInput source="sirenNumber" required />
+            <NumberInput source="capital" required />
+            <ReferenceInput
+                source="legalStatus"
+                reference="legalStatuses"
+                label="label"
+                required
+            >
+                <AutocompleteInput optionValue="label" optionText="label" />
             </ReferenceInput>
-            <TextInput source='registrationCity' required />
-            <DateTimeInput source='registrationDate' required />
+            <TextInput source="registrationCity" required />
+            <DateTimeInput source="registrationDate" required />
         </SimpleForm>
     </Edit>
 );
