@@ -8,8 +8,7 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 # install app dependencies
-COPY package.json ./
-COPY yarn.lock ./
+COPY package.json yarn.lock ./
 
 FROM common as prod
 
@@ -19,7 +18,7 @@ ENV NODE_ENV=production
 RUN yarn install --production=true
 
 # add app
-COPY .env index.html tsconfig.json tsconfig.node.json vite.config.ts ./
+COPY .env index.html tsconfig.json tsconfig.node.json index.html ./
 COPY public public/
 COPY src src/
 
@@ -29,10 +28,10 @@ CMD ["yarn", "start"]
 FROM common as dev
 
 # install app dependencies
-RUN yarn install
+RUN yarn install --network-timeout 600000
 
 # add app
-COPY .env index.html tsconfig.json tsconfig.node.json vite.config.ts ./
+COPY .env index.html tsconfig.json tsconfig.node.json vite.config.ts index.html .eslintrc.cjs ./
 COPY public public/
 COPY src src/
 

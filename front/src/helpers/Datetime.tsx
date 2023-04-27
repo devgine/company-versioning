@@ -16,11 +16,11 @@ export const DateTimeUTCFormat = v => {
 export const DateTimeToday = () => {
     const inputDate = new Date();
 
-    let day, month, year;
+    let day, month;
 
     day = inputDate.getDate();
     month = inputDate.getMonth() + 1;
-    year = inputDate.getFullYear();
+    const year = inputDate.getFullYear();
 
     day = day
         .toString()
@@ -34,7 +34,7 @@ export const DateTimeToday = () => {
 };
 
 export const isValid = (datetime) => {
-    let timestamp = Date.parse(datetime);
+    const timestamp = Date.parse(datetime);
 
     if (!isNaN(timestamp)) {
         return (DateTimeUTCFormat(new Date(timestamp)));

@@ -16,7 +16,7 @@ export const CompanyHistoryShow = (props) => {
 
     const notify = useNotify();
 
-    let datetimeTz = isValid(datetime);
+    const datetimeTz = isValid(datetime);
 
     if (!datetimeTz) {
         return notify(`CompanyHistoryShow: ${datetime} id not a valid datetime to fetch history`, {type: 'error'});
