@@ -1,5 +1,5 @@
 ##----------------------------------------------------------------------------------------------------------------------
-##--------------------------------------------------- SAS - Makefile ---------------------------------------------------
+##------------------------------------------------------ Makefile ------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------------------------
 
 DC=docker-compose
@@ -21,8 +21,11 @@ help : Makefile # Print commands help.
 logs: ## View containers logs.
 	$(DC) logs -f $(filter-out $@,$(MAKECMDGOALS))
 
-shell: ## Run bash shell in php container.
-	$(DC) exec php sh
+shell-php: ## Run bash shell in php container.
+	$(DC) exec $(PHP_CONTAINER) sh
+
+shell-node: ## Run bash shell in node container.
+	$(DC) exec $(NODE_CONTAINER) sh
 
 # todo complete this job including the installation of node server
 install-local: ## Install project on dev local project
@@ -73,9 +76,9 @@ unit-tests-coverage: ## Run unit tests with code coverage generate.
 	@echo "See coverage result here : https://symfony.localhost/coverage/html/unit/index.html"
 
 ##
-## Quality code
+## Code quality
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: fix fix-dry-run pstan eslint
+.PHONY: fix fix-dry-run pstan lint prettier prettier-check
 
 fix: ## Runs the CS fixer to fix the project coding style.
 	$(EXEC_PHP) vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache $(filter-out $@,$(MAKECMDGOALS))
@@ -87,32 +90,49 @@ phpstan: ## Run phpstan analyses.
 	$(EXEC_PHP) bin/console cache:warmup
 	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon
 
-eslint: ## Run the ESLinter to sniff typescript code.
-	$(EXEC_NODE) yarn eslint --cache --cache-location ./.eslintcache --color --quiet .
+lint: ## Run the ESLinter to analyse typescript code.
+	$(EXEC_NODE) yarn lint
+
+prettier: ## Run the prettier to fix typescript code quality.
+	$(EXEC_NODE) yarn prettier
+
+prettier-check: ## Run the prettier to check typescript code quality.
+	$(EXEC_NODE) yarn prettier-check
 
 ##
-## Tests and Quality check
+## Continuous integration
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: ci
-ci: ## Execute all tests and linters in a single command.
+.PHONY: ci ci-php ci-node
+ci-php: ## Execute tests and code quality for PHP container.
 	$(MAKE) unit-tests
 	$(MAKE) fix-dry
 	$(MAKE) phpstan
-	$(MAKE) eslint
+
+ci-node: ## Execute tests and code quality for node container.
+	$(MAKE) lint
+	$(MAKE) prettier-check
+
+ci: ## Execute all tests and linters in a single command.
+	$(MAKE) ci-php
+	$(MAKE) ci-node
 
 ##
-## Security checker
+## Security
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: security-checker audit
+.PHONY: security-php security-node security
 
-security-checker: ## Identify security flaws in PHP dependencies.
+security-php: ## Identify vulnerabilities in PHP dependencies.
 	./local-php-security-checker --path=./symfony/composer.lock
 
-audit: ## Identify vulnerabilities in node packages.
+security-node: ## Identify vulnerabilities in node packages.
 	$(EXEC_NODE) yarn audit
 
+security: ## Identify vulnerabilities in PHP and node packages.
+	$(MAKE) security-php
+	$(MAKE) security-node
+
 ##
-## Run SQL
+##* Run SQL
 ##----------------------------------------------------------------------------------------------------------------------
 .PHONY: sql
 

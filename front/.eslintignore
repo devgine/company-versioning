@@ -16,3 +16,5 @@ packages/website-eslint/**/*.d.ts
 
 # Files copied as part of the build
 packages/types/src/generated/**/*.ts
+
+.prettierignore

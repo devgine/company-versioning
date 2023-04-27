@@ -25,3 +25,4 @@
 /front/*.local
 
 /front/.eslintcache
+/front/.prettierignore
