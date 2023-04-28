@@ -1,22 +1,22 @@
-import { useRef } from 'react';
 import {
     SimpleForm,
     Toolbar,
     Button,
     useGetRecordId,
-    useRefresh,
     useNotify,
+    useStore,
 } from 'react-admin';
 
 import { Box, Typography, Card } from '@mui/material';
 
-import { TextInputRef } from '../../helpers/TextInputRef';
 import { CompanyHistoryShow } from './CompanyHistoryShow';
 import { isValid } from '../../helpers/Datetime';
 
 const HistoryFormToolbar = () => {
-    const refresh = useRefresh();
     const notify = useNotify();
+    const [companyHistoryDatetime, setCompanyHistoryDatetime] = useStore(
+        'company.history.datetime.search'
+    );
 
     const handleClick = () => {
         const datetime: string | null = (
@@ -37,7 +37,7 @@ const HistoryFormToolbar = () => {
             return null;
         }
 
-        refresh();
+        setCompanyHistoryDatetime(datetime);
     };
 
     return (
@@ -49,23 +49,27 @@ const HistoryFormToolbar = () => {
 
 export default () => {
     const recordId = useGetRecordId();
-    const datetimeRef = useRef(null);
+    const [companyHistoryDatetime, setCompanyHistoryDatetime] = useStore(
+        'company.history.datetime.search',
+        ''
+    );
 
     return (
         <Box sx={{ width: '40%', margin: '1em' }}>
             <Typography variant="h6">History</Typography>
             <Card>
                 <SimpleForm toolbar={<HistoryFormToolbar />}>
-                    <TextInputRef
-                        label="Datetime"
-                        id="companyHistoryDatetimeSearch"
-                        ref={datetimeRef}
-                    />
+                    <div>
+                        <label>Datetime</label>
+                    </div>
+                    <div>
+                        <input type="text" id="companyHistoryDatetimeSearch" />
+                    </div>
                 </SimpleForm>
-                {datetimeRef.current && datetimeRef.current.value && (
+                {companyHistoryDatetime !== '' && (
                     <CompanyHistoryShow
-                        id={recordId}
-                        datetime={String(datetimeRef.current.value)}
+                        id={Number(recordId)}
+                        datetime={String(companyHistoryDatetime)}
                     />
                 )}
             </Card>

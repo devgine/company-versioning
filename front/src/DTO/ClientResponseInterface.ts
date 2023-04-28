@@ -1,7 +1,7 @@
 export interface UseGetOneResponseInterface {
-    data: string[];
-    loading: boolean;
-    error?: ClientError;
+    data: object | undefined | null;
+    loading?: boolean;
+    error: ClientError | any;
 }
 
 export interface ClientError {

@@ -1,6 +1,6 @@
-export const DateTimeUTCFormat = v => {
+export const DateTimeUTCFormat = (v: Date) => {
     // v is a `Date` object 2023-04-20T22:27:37+00:00
-    if (!(v instanceof Date) || isNaN(v)) return;
+
     const pad = '00';
     const yy = v.getUTCFullYear().toString();
     const mm = (v.getUTCMonth() + 1).toString();

@@ -18,13 +18,19 @@ export const CompanyHistoryShow = (props: CompanyHistoryRequestInterface) => {
 
     const notify = useNotify();
 
+    if (null === datetime) {
+        return null;
+    }
+
     const datetimeTz = isValid(datetime);
 
     if (!datetimeTz) {
-        return notify(
-            `CompanyHistoryShow: ${datetime} id not a valid datetime to fetch history`,
+        notify(
+            `CompanyHistoryShow: "${datetime}" is not a valid datetime to fetch history`,
             { type: 'error' }
         );
+
+        return null;
     }
 
     const companyResponse: UseGetOneResponseInterface = useGetOne(
@@ -33,19 +39,27 @@ export const CompanyHistoryShow = (props: CompanyHistoryRequestInterface) => {
         { retry: 0 }
     );
 
-    if (companyResponse.loading) {
+    if (true === companyResponse.loading) {
         return <Loading />;
     }
-    if (companyResponse.error) {
-        return notify(
-            `Could not load history: ${companyResponse.error.message}`,
-            { type: 'error' }
-        );
+
+    if (undefined === companyResponse.data || null === companyResponse.data) {
+        notify(`Not found history`, { type: 'info' });
+
+        return null;
+    }
+
+    if (companyResponse.error !== null && companyResponse.error !== undefined) {
+        notify(`Could not load history: ${companyResponse.error.message}`, {
+            type: 'error',
+        });
+
+        return null;
     }
 
     return (
         <RecordContextProvider value={companyResponse.data}>
-            <SimpleShowLayout emptyWhileLoading>
+            <SimpleShowLayout>
                 <TextField source="name" />
                 <TextField source="sirenNumber" />
                 <TextField source="capital" />
