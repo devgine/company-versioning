@@ -34,15 +34,19 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        working-directory: './front/'
 
       - name: Lint
         run: yarn lint
+        working-directory: './front/'
 
       - name: Code standard check
         run: yarn prettier-check
+        working-directory: './front/'
 
       - name: Build
         run: yarn build:ci
+        working-directory: './front/'
 
       # todo: add tests
       # todo add deploy gh-pages only when push main branch
