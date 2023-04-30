@@ -27,3 +27,6 @@ https://handsonreact.com/docs/build-deploy
 ### CI CD
 https://dev.to/dyarleniber/setting-up-a-ci-cd-workflow-on-github-actions-for-a-react-app-with-github-pages-and-codecov-4hnp
 https://michaelcurrin.github.io/code-cookbook/recipes/ci-cd/github-actions/workflows/node/yarn.html
+
+### Fake dataProvider 
+https://github.com/marmelab/react-admin/blob/master/packages/ra-data-fakerest/README.md

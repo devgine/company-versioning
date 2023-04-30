@@ -30,6 +30,7 @@ jobs:
         with:
           node-version: 19.x
           cache: 'yarn'
+          cache-dependency-path: './front/yarn.lock'
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
