@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "build:ci": "env-cmd -f .env.ci yarn build",
+        "build:ci": "env-cmd -f .env.ci yarn build --base ./",
         "build:prod": "env-cmd -f .env.prod yarn build",
         "predeploy": "yarn build:ci",
         "deploy": "gh-pages -d dist",
