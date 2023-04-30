@@ -8,12 +8,15 @@
         "build": "tsc && vite build",
         "build:ci": "env-cmd -f .env.ci yarn build",
         "build:prod": "env-cmd -f .env.prod yarn build",
+        "predeploy": "yarn build:ci",
+        "deploy": "gh-pages -d dist",
         "preview": "vite preview",
         "host": "vite --host",
         "lint": "eslint --cache --cache-location ./.eslintcache --color --quiet .",
         "prettier": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --write \"**/*.+(js|ts|tsx|json)\"",
         "prettier-check": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --check \"**/*.+(js|ts|tsx|json)\""
     },
+    "homepage": "https://devgine.github.io/company-versionnig/admin",
     "dependencies": {
         "env-cmd": "^10.1.0",
         "ra-data-json-server": "^4.9.0",
@@ -28,6 +31,7 @@
         "@typescript-eslint/parser": "^5.59.1",
         "@vitejs/plugin-react": "^3.1.0",
         "eslint": "^8.39.0",
+        "gh-pages": "^5.0.0",
         "prettier": "2.8.8",
         "typescript": "^5.0.4",
         "vite": "^4.2.1"
