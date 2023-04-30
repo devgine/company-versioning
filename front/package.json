@@ -16,7 +16,7 @@
         "prettier": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --write \"**/*.+(js|ts|tsx|json)\"",
         "prettier-check": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --check \"**/*.+(js|ts|tsx|json)\""
     },
-    "homepage": "https://devgine.github.io/company-versionnig/admin",
+    "homepage": "https://devgine.github.io/company-versionnig/",
     "dependencies": {
         "env-cmd": "^10.1.0",
         "ra-data-json-server": "^4.9.0",
@@ -33,6 +33,7 @@
         "eslint": "^8.39.0",
         "gh-pages": "^5.0.0",
         "prettier": "2.8.8",
+        "ra-data-fakerest": "^4.10.1",
         "typescript": "^5.0.4",
         "vite": "^4.2.1"
     }
