@@ -11,28 +11,20 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json yarn.lock ./
 
 # install app dependencies
-RUN yarn install --network-timeout 100000
+RUN yarn install --ignore-scripts --non-interactive --frozen-lockfile --network-timeout 100000
 
-# add app todo: manage .env by environment
-COPY .env index.html tsconfig.json tsconfig.node.json vite.config.ts index.html ./
+# add project files
+COPY .env .env.* index.html tsconfig.json tsconfig.node.json vite.config.ts index.html ./
 COPY public public/
 COPY src src/
 
 ## build the project for production
 FROM builder as prod-builder
 
-RUN yarn build
-
-FROM builder as dev
-
-# add app
-COPY .eslintrc.cjs .prettierrc.cjs ./
-
-# start app
-CMD ["yarn", "dev", "--host"]
+RUN yarn build:prod
 
 ### PROD STAGE
-FROM nginx:1.16-alpine as prod
+FROM nginx:1.16-alpine as webapp
 
 WORKDIR /app
 
@@ -47,3 +39,12 @@ COPY --from=prod-builder /app/dist /app
 EXPOSE 80
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
+### DEV STAGE
+FROM builder as dev
+
+# add app
+COPY .eslintrc.cjs .prettierrc.cjs ./
+
+# start app
+CMD ["yarn", "host"]

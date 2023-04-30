@@ -18,3 +18,12 @@ https://debricked.com/blog/fixing-security-vulnerabilities-yarn/
 
 ### React tools
 https://dev.to/alexomeyer/10-must-have-react-developer-tools-to-write-clean-code-1808
+
+### Build react app by env
+https://tacomanator.medium.com/environments-with-create-react-app-7b645312c09d
+https://handsonreact.com/docs/build-deploy
+
+
+### CI CD
+https://dev.to/dyarleniber/setting-up-a-ci-cd-workflow-on-github-actions-for-a-react-app-with-github-pages-and-codecov-4hnp
+https://michaelcurrin.github.io/code-cookbook/recipes/ci-cd/github-actions/workflows/node/yarn.html
