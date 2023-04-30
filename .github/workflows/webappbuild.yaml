@@ -56,14 +56,13 @@ jobs:
         uses: 'actions/jekyll-build-pages@v1'
         with:
           source: './front/dist/'
-          destination: './_site'
 
       - name: Upload artifact
         uses: 'actions/upload-pages-artifact@v1'
 
   deploy:
     environment:
-      name: github-pages
+      name: webapp-page
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
