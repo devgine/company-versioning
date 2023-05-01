@@ -12,3 +12,4 @@ coverage
 **/.tsx
 **/node_modules
 *.md
+package.json

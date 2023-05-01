@@ -42,9 +42,14 @@ jobs:
         working-directory: './front/'
 
       - name: Code standard check
-        run: yarn prettier-check
+        run: yarn prettier:check
         working-directory: './front/'
-      # todo: add tests
+
+      # todo: to be replaced with "yarn test:clover"
+      - name: Code standard check
+        run: yarn test
+        working-directory: './front/'
+
       - name: Build
         run: yarn build:ci
         working-directory: './front/'

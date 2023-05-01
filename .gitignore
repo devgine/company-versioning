@@ -26,3 +26,5 @@
 
 /front/.eslintcache
 /front/.prettiercache
+
+/front/coverage

@@ -65,15 +65,22 @@ data-fixtures: ## Execute doctrine fixtures.
 ##
 ## Tests
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: unit-tests unit-tests-coverage
+.PHONY: php-unit-tests php-unit-tests-coverage node-unit-tests node-unit-tests-coverage
 
-unit-tests: ## Run unit tests.
+php-unit-tests: ## Run php unit tests.
 	$(EXEC_PHP) vendor/bin/phpunit
 
 # todo update generated URL
-unit-tests-coverage: ## Run unit tests with code coverage generate.
+php-unit-tests-coverage: ## Run php unit tests with code coverage generate.
 	$(EXEC_PHP) vendor/bin/phpunit --coverage-html=public/coverage/html/unit --coverage-php=public/coverage/php/phpunit.cov
 	@echo "See coverage result here : https://symfony.localhost/coverage/html/unit/index.html"
+
+node-unit-tests: ## Run typescript unit tests.
+	$(EXEC_NODE) yarn test # todo: replace with test:clover
+
+node-unit-tests-coverage: ## Run typescript unit tests with code coverage generate.
+	$(EXEC_NODE) yarn test:coverage
+	@echo "See coverage result here : http://localhost:3000/coverage/lcov-report/index.html"
 
 ##
 ## Code quality
@@ -97,20 +104,21 @@ prettier: ## Run the prettier to fix typescript code quality.
 	$(EXEC_NODE) yarn prettier
 
 prettier-check: ## Run the prettier to check typescript code quality.
-	$(EXEC_NODE) yarn prettier-check
+	$(EXEC_NODE) yarn prettier:check
 
 ##
 ## Continuous integration
 ##----------------------------------------------------------------------------------------------------------------------
 .PHONY: ci ci-php ci-node
 ci-php: ## Execute tests and code quality for PHP container.
-	$(MAKE) unit-tests
+	$(MAKE) php-unit-tests
 	$(MAKE) fix-dry
 	$(MAKE) phpstan
 
 ci-node: ## Execute tests and code quality for node container.
 	$(MAKE) prettier
 	$(MAKE) lint
+	$(MAKE) node-unit-tests
 
 ci: ## Execute all tests and linters in a single command.
 	$(MAKE) ci-php
