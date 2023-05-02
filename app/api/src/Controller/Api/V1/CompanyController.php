@@ -2,8 +2,8 @@
 
 namespace App\Controller\Api\V1;
 
-use App\Validator\Validator;
 use App\Entity\Company;
+use App\Validator\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -27,8 +27,7 @@ class CompanyController extends AbstractController
         protected EntityManagerInterface $em,
         protected Validator $validator,
         protected DenormalizerInterface $denormalizer
-    )
-    {
+    ) {
     }
 
     #[Rest\QueryParam(
@@ -64,7 +63,7 @@ class CompanyController extends AbstractController
         $end = $paramFetcher->get('_end');
         $order = $paramFetcher->get('_order');
         $sort = $paramFetcher->get('_sort');
-        $search = $paramFetcher->get('search') ?? $paramFetcher->get('q') ;
+        $search = $paramFetcher->get('search') ?? $paramFetcher->get('q');
 
         return $this->json(
             data: $this->em->getRepository(Company::class)->search(
@@ -136,7 +135,7 @@ class CompanyController extends AbstractController
             context: [
                 'groups' => ['set-company'],
                 AbstractNormalizer::OBJECT_TO_POPULATE => $company,
-                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true
+                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,
             ]
         );
 

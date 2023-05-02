@@ -14,8 +14,7 @@ class LegalStatusController extends AbstractController
 {
     public function __construct(
         protected EntityManagerInterface $em
-    )
-    {
+    ) {
     }
 
     #[Rest\QueryParam(

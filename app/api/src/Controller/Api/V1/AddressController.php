@@ -28,8 +28,7 @@ class AddressController extends AbstractController
         protected EntityManagerInterface $em,
         protected Validator $validator,
         protected DenormalizerInterface $denormalizer
-    )
-    {
+    ) {
     }
 
     #[Rest\QueryParam(
@@ -140,7 +139,7 @@ class AddressController extends AbstractController
             context: [
                 'groups' => ['set-address'],
                 AbstractNormalizer::OBJECT_TO_POPULATE => $address,
-                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true
+                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,
             ]
         );
 

@@ -14,5 +14,4 @@ use Gedmo\Loggable\Entity\MappedSuperclass\AbstractLogEntry;
 #[ORM\Index(columns: ['object_id', 'object_class', 'version'], name: 'log_version_lookup_idx')]
 class CompanyVersion extends AbstractLogEntry
 {
-
 }

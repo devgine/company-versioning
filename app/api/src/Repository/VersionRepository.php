@@ -31,8 +31,8 @@ class VersionRepository extends LogEntryRepository
         $objectId = (string) $wrapped->getIdentifier();
         $q = $this->_em->createQuery($dql);
         $q->setParameters(compact('objectId', 'objectClass'));
-        $q->setParameter('datetime', $datetime->format("Y-m-d H:i:s"));
+        $q->setParameter('datetime', $datetime->format('Y-m-d H:i:s'));
 
-        return (0 < count($q->getResult()) ? $q->getResult()[0] : null);
+        return 0 < count($q->getResult()) ? $q->getResult()[0] : null;
     }
 }

@@ -85,12 +85,12 @@ node-unit-tests-coverage: ## Run typescript unit tests with code coverage genera
 ##
 ## Code quality
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: fix fix-dry-run pstan lint prettier prettier-check
+.PHONY: fix fix-dry-run phpstan lint prettier prettier-check
 
 fix: ## Runs the CS fixer to fix the project coding style.
 	$(EXEC_PHP) vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache $(filter-out $@,$(MAKECMDGOALS))
 
-fix-dry-run: ## Runs the CS fixer to sniff the project coding style.
+fix-dry-run: ## Runs the CS fixer to sniff the project coding style (without fix).
 	$(EXEC_PHP) vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache --dry-run
 
 phpstan: ## Run phpstan analyses.
@@ -112,7 +112,7 @@ prettier-check: ## Run the prettier to check typescript code quality.
 .PHONY: ci ci-php ci-node
 ci-php: ## Execute tests and code quality for PHP container.
 	$(MAKE) php-unit-tests
-	$(MAKE) fix-dry
+	$(MAKE) fix-dry-run
 	$(MAKE) phpstan
 
 ci-node: ## Execute tests and code quality for node container.

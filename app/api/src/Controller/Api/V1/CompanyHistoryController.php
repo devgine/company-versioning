@@ -23,8 +23,7 @@ class CompanyHistoryController extends AbstractController
     public function __construct(
         protected EntityManagerInterface $em,
         protected DenormalizerInterface $denormalizer
-    )
-    {
+    ) {
     }
 
     // todo add request requirement regex for id and datetime
@@ -47,7 +46,7 @@ class CompanyHistoryController extends AbstractController
 
         $addressVersionRepository = $this->em->getRepository(AddressVersion::class);
 
-        $addresses = New ArrayCollection();
+        $addresses = new ArrayCollection();
 
         foreach ($company->getAddresses() as $address) {
             $addressVersions = $addressVersionRepository->getLogEntriesByDate($address, $datetime);
@@ -59,7 +58,6 @@ class CompanyHistoryController extends AbstractController
         }
 
         $company->setAddresses($addresses);
-
 
         return $this->json(data: $company, context: ['groups' => self::GET_GROUPS]);
     }
