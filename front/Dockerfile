@@ -14,7 +14,7 @@ COPY package.json yarn.lock ./
 RUN yarn install --ignore-scripts --non-interactive --frozen-lockfile --network-timeout 100000
 
 # add project files
-COPY .env .env.* index.html tsconfig.json tsconfig.node.json vite.config.ts index.html ./
+COPY .env .env.* index.html tsconfig.json tsconfig.node.json vite.config.ts ./
 COPY public public/
 COPY src src/
 
@@ -44,7 +44,23 @@ ENTRYPOINT ["nginx", "-g", "daemon off;"]
 FROM builder as dev
 
 # add app
-COPY .eslintrc.cjs .prettierrc.cjs ./
+COPY .eslintrc.cjs .prettierrc.cjs jest.config.cjs ./
+COPY tests tests/
+
+## LABELS
+LABEL maintainer="yosribahri@gmail.com"
+LABEL org.opencontainers.image.source="https://github.com/devgine/company-versioning/"
+LABEL org.opencontainers.image.description="Company versioning web app"
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL org.label-schema.name="devgine/company-versioning"
+LABEL org.label-schema.description="Company versioning web app"
+LABEL org.label-schema.url="https://devgine.github.io/company-versioning/"
+LABEL org.label-schema.vcs-url="https://github.com/devgine/company-versioning/"
+LABEL org.label-schema.vcs-ref=$VCS_REF
+#LABEL org.label-schema.vendor="WSO2"
+LABEL org.label-schema.version=$BUILD_VERSION
+LABEL org.label-schema.docker.cmd="docker run -d ghcr.io/devgine/company-versioning-webapp"
 
 # start app
 CMD ["yarn", "host"]
