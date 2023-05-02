@@ -30,3 +30,8 @@ https://michaelcurrin.github.io/code-cookbook/recipes/ci-cd/github-actions/workf
 
 ### Fake dataProvider 
 https://github.com/marmelab/react-admin/blob/master/packages/ra-data-fakerest/README.md
+
+### Unit Tests
+[Jest](https://jestjs.io/docs/getting-started#using-typescript)
+[Jest typescript config example](https://www.testim.io/blog/typescript-unit-testing-101/)
+[react-testing-library](https://github.com/testing-library/react-testing-library)

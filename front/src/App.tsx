@@ -1,5 +1,5 @@
 import { Admin, Resource } from 'react-admin';
-import { Dashboard } from './Dashboard';
+import Dashboard from './Dashboard';
 import ApiDataProvider from './common/dataProvider';
 import FakeDataProvider from './common/dataProviderFaker';
 import companies from './resources/Company';
