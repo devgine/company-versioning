@@ -47,7 +47,7 @@ jobs:
 
       # todo: to be replaced with "yarn test:clover"
       - name: Code standard check
-        run: yarn test
+        run: yarn test:clover
         working-directory: './front/'
 
       - name: Build
