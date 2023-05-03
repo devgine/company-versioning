@@ -2,8 +2,7 @@
 
 namespace App\Controller\Api\V1;
 
-use App\Entity\LegalStatus;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Manager\LegalStatusManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,9 +12,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class LegalStatusController extends AbstractController
 {
     public function __construct(
-        protected EntityManagerInterface $em
-    )
-    {
+        protected LegalStatusManager $legalStatusManager
+    ) {
     }
 
     #[Rest\QueryParam(
@@ -25,7 +23,7 @@ class LegalStatusController extends AbstractController
     public function getCollection(ParamFetcher $paramFetcher): JsonResponse
     {
         $search = $paramFetcher->get('q');
-        $legalStatuses = $this->em->getRepository(LegalStatus::class)->search(
+        $legalStatuses = $this->legalStatusManager->search(
             search: $search
         );
 

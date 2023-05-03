@@ -26,9 +26,9 @@ class LegalStatusImportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        try {
-            $io = new SymfonyStyle($input, $output);
+        $io = new SymfonyStyle($input, $output);
 
+        try {
             $data = file_get_contents(self::FILE_PATH);
             $import = $this->serializer->deserialize($data, LegalStatus::class.'[]', 'csv');
 

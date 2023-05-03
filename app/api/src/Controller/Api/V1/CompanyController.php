@@ -2,9 +2,9 @@
 
 namespace App\Controller\Api\V1;
 
-use App\Validator\Validator;
 use App\Entity\Company;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Manager\CompanyManager;
+use App\Validator\Validator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,11 +24,10 @@ class CompanyController extends AbstractController
     public const GET_GROUPS = ['get', 'get-company', 'get-company-addresses'];
 
     public function __construct(
-        protected EntityManagerInterface $em,
+        protected CompanyManager $companyManager,
         protected Validator $validator,
         protected DenormalizerInterface $denormalizer
-    )
-    {
+    ) {
     }
 
     #[Rest\QueryParam(
@@ -64,17 +63,17 @@ class CompanyController extends AbstractController
         $end = $paramFetcher->get('_end');
         $order = $paramFetcher->get('_order');
         $sort = $paramFetcher->get('_sort');
-        $search = $paramFetcher->get('search') ?? $paramFetcher->get('q') ;
+        $search = $paramFetcher->get('search') ?? $paramFetcher->get('q');
 
         return $this->json(
-            data: $this->em->getRepository(Company::class)->search(
+            data: $this->companyManager->search(
                 search: $search,
                 order: $order,
                 sort: $sort,
                 limit: $end - $start,
                 offset: $start
             ),
-            headers: ['X-Total-Count' => $this->em->getRepository(Company::class)->total($search)],
+            headers: ['X-Total-Count' => $this->companyManager->total($search)],
             context: ['groups' => self::GET_GROUPS]
         );
     }
@@ -83,7 +82,7 @@ class CompanyController extends AbstractController
     #[Rest\Head(path: self::ID_IN_PATH, name: 'api_v1_companies_head')]
     public function get(int $id): JsonResponse
     {
-        if (null === $company = $this->em->find(Company::class, $id)) {
+        if (null === $company = $this->companyManager->find($id)) {
             throw new NotFoundHttpException('Company not found.');
         }
 
@@ -93,12 +92,11 @@ class CompanyController extends AbstractController
     #[Rest\Delete(path: self::ID_IN_PATH, name: 'api_v1_companies_delete')]
     public function delete(int $id): JsonResponse
     {
-        if (null === $company = $this->em->find(Company::class, $id)) {
+        if (null === $company = $this->companyManager->find($id)) {
             throw new NotFoundHttpException('Company not found.');
         }
 
-        $this->em->remove($company);
-        $this->em->flush();
+        $this->companyManager->remove($company);
 
         return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
     }
@@ -116,8 +114,7 @@ class CompanyController extends AbstractController
             throw new BadRequestHttpException(json_encode($violations));
         }
 
-        $this->em->persist($company);
-        $this->em->flush();
+        $this->companyManager->save($company);
 
         return $this->json(data: $company, status: Response::HTTP_CREATED, context: ['groups' => ['get', 'get-company']]);
     }
@@ -126,7 +123,7 @@ class CompanyController extends AbstractController
     #[Rest\Patch(path: self::ID_IN_PATH, name: 'api_v1_companies_patch')]
     public function update(int $id, Request $request): JsonResponse
     {
-        if (null === $company = $this->em->find(Company::class, $id)) {
+        if (null === $company = $this->companyManager->find($id)) {
             throw new NotFoundHttpException(sprintf('Company not found with id %d', $id));
         }
 
@@ -136,7 +133,7 @@ class CompanyController extends AbstractController
             context: [
                 'groups' => ['set-company'],
                 AbstractNormalizer::OBJECT_TO_POPULATE => $company,
-                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true
+                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,
             ]
         );
 
@@ -144,8 +141,7 @@ class CompanyController extends AbstractController
             throw new BadRequestHttpException(json_encode($violations));
         }
 
-        $this->em->persist($company);
-        $this->em->flush();
+        $this->companyManager->save($company);
 
         return $this->json(data: $company, context: ['groups' => self::GET_GROUPS]);
     }

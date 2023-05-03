@@ -10,6 +10,9 @@
 namespace App\Validator;
 
 use App\Formatter\ViolationFormatter;
+use App\Model\Violation;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\GroupSequence;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Validator
@@ -20,8 +23,17 @@ class Validator
     ) {
     }
 
-    public function validate($object, $constraints = null, $groups = null): ?array
-    {
+    /**
+     * @psalm-param Constraint[] $constraints
+     * @psalm-param int[]|string[]|GroupSequence[] $groups
+     *
+     * @psalm-return Violation[]
+     */
+    public function validate(
+        mixed $object,
+        array|Constraint|null $constraints = null,
+        array|string|GroupSequence|null $groups = null
+    ): ?array {
         $constraintViolationList = $this->validator->validate($object, $constraints, $groups);
 
         if ($constraintViolationList->count() > 0) {
