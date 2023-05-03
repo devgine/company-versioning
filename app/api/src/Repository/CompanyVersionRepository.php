@@ -2,22 +2,13 @@
 
 namespace App\Repository;
 
-use App\Entity\Address;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\Company;
 use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
 use Gedmo\Tool\Wrapper\EntityWrapper;
 
-/**
- * @extends ServiceEntityRepository<Address>
- *
- * @method Address|null find($id, $lockMode = null, $lockVersion = null)
- * @method Address|null findOneBy(array $criteria, array $orderBy = null)
- * @method Address[]    findAll()
- * @method Address[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-class VersionRepository extends LogEntryRepository
+class CompanyVersionRepository extends LogEntryRepository
 {
-    public function getLogEntriesByDate($entity, $datetime)
+    public function getLogEntriesByDate(Company $entity, \DateTimeInterface $datetime): ?object
     {
         $wrapped = new EntityWrapper($entity, $this->_em);
         $objectClass = $wrapped->getMetadata()->getName();

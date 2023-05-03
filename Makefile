@@ -16,7 +16,7 @@ help : Makefile # Print commands help.
 ##
 ## Docker commands
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: logs shell install-local
+.PHONY: logs shell-php shell-node install-local
 
 logs: ## View containers logs.
 	$(DC) logs -f $(filter-out $@,$(MAKECMDGOALS))
@@ -38,12 +38,10 @@ install-local: ## Install project on dev local project
 	@echo "Clean all non static directories"
 	$(DC) exec php rm -rf symfony/vendor/* symfony/var/* symfony/*.cache
 	sleep 15
-	$(DC) exec -e COMPOSER_MEMORY_LIMIT=-1 php composer install
-	$(EXEC_PHP) bin/console lexik:jwt:generate-keypair --skip-if-exists
+	$(EXEC_PHP) exec php composer install
 	$(MAKE) migration
-	$(EXEC_PHP) bin/console import:close_county
-	$(EXEC_PHP) bin/console doctrine:fixtures:load --group default -n
-	$(EXEC_PHP) bin/console fhir:referentiel:slot:speciality
+	$(EXEC_PHP) bin/console php bin/console app:legal-statuses:import
+	$(EXEC_PHP) bin/console doctrine:fixtures:load -n
 
 ##
 ## Symfony commands
@@ -94,7 +92,6 @@ fix-dry-run: ## Runs the CS fixer to sniff the project coding style (without fix
 	$(EXEC_PHP) vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache --dry-run
 
 phpstan: ## Run phpstan analyses.
-	$(EXEC_PHP) bin/console cache:warmup
 	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon
 
 lint: ## Run the ESLinter to analyse typescript code.

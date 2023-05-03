@@ -2,11 +2,11 @@
 
 namespace App\Controller\Api\V1;
 
-use App\Entity\AddressVersion;
-use App\Entity\Company;
-use App\Entity\CompanyVersion;
+use App\Manager\AddressManager;
+use App\Manager\AddressVersionManager;
+use App\Manager\CompanyManager;
+use App\Manager\CompanyVersionManager;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,7 +21,10 @@ class CompanyHistoryController extends AbstractController
     public const GET_GROUPS = ['get', 'get-company', 'get-company-addresses'];
 
     public function __construct(
-        protected EntityManagerInterface $em,
+        protected CompanyVersionManager $companyVersionManager,
+        protected AddressVersionManager $addressVersionManager,
+        protected CompanyManager $companyManager,
+        protected AddressManager $addressManager,
         protected DenormalizerInterface $denormalizer
     ) {
     }
@@ -31,28 +34,25 @@ class CompanyHistoryController extends AbstractController
     #[Rest\Head(path: self::ID_IN_PATH, name: 'api_v1_company_histories_head')]
     public function get(int $id, \DateTimeInterface $datetime): JsonResponse
     {
-        if (null === $company = $this->em->find(Company::class, $id)) {
+        if (null === $company = $this->companyManager->find($id)) {
             throw new NotFoundHttpException('Company not found.');
         }
 
-        $companyVersionRepository = $this->em->getRepository(CompanyVersion::class);
-        $companyVersions = $companyVersionRepository->getLogEntriesByDate($company, $datetime);
+        $companyVersions = $this->companyVersionManager->getLogEntriesByDate($company, $datetime);
 
         if (null === $companyVersions) {
             return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
         }
 
-        $companyVersionRepository->revert($company, $companyVersions->getVersion());
-
-        $addressVersionRepository = $this->em->getRepository(AddressVersion::class);
+        $this->companyVersionManager->revert($company, $companyVersions->getVersion());
 
         $addresses = new ArrayCollection();
 
         foreach ($company->getAddresses() as $address) {
-            $addressVersions = $addressVersionRepository->getLogEntriesByDate($address, $datetime);
+            $addressVersions = $this->addressVersionManager->getLogEntriesByDate($address, $datetime);
 
             if (null !== $addressVersions) {
-                $addressVersionRepository->revert($address, $addressVersions->getVersion());
+                $this->addressVersionManager->revert($address, $addressVersions->getVersion());
                 $addresses->add($address);
             }
         }
