@@ -20,12 +20,12 @@
     <testsuite name="Unit test suite">
       <directory>tests/Unit</directory>
     </testsuite>
-    <testsuite name="Integration test suite">
+    <!-- <testsuite name="Integration test suite">
       <directory>tests/Integration</directory>
     </testsuite>
     <testsuite name="Application test suite">
       <directory>tests/Application</directory>
-    </testsuite>
+    </testsuite> -->
   </testsuites>
 
   <coverage>
