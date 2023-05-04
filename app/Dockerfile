@@ -36,6 +36,14 @@ EXPOSE 9000
 ## ClEAN
 RUN rm -rf /tmp/* /var/cache/apk/* /var/tmp/*
 
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+
+## XDEBUG
+RUN install-php-extensions xdebug-3.2.1
+COPY .docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY .docker/php/error_reporting.ini /usr/local/etc/php/conf.d/error_reporting.ini
+## END XDEBUG
+
 ARG BUILD_DATE
 ARG VCS_REF
 ARG BUILD_VERSION
