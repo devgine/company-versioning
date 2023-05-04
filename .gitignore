@@ -16,6 +16,7 @@
 /app/api/.phpunit.result.cache
 /app/api/.phpunit.cache
 /app/api/phpunit.xml
+/app/api/public/coverage
 ###< symfony/phpunit-bridge ###
 
 ###< symfony/framework-bundle ###
