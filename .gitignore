@@ -12,6 +12,12 @@
 /app/api/.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
+###> symfony/phpunit-bridge ###
+/app/api/.phpunit.result.cache
+/app/api/.phpunit.cache
+/app/api/phpunit.xml
+###< symfony/phpunit-bridge ###
+
 ###< symfony/framework-bundle ###
 
 
