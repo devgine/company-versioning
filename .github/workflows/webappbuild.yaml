@@ -117,8 +117,8 @@ jobs:
       - name: Docker image build and push
         uses: 'depot/build-push-action@v1'
         with:
-          project: ${{ secrets.DEPOT_PROJECT_ID }}
-          token: ${{ secrets.DEPOT_PROJECT_TOKEN }}
+          project: ${{ secrets.DEPOT_PROJECT_ID_WEBAPP }}
+          token: ${{ secrets.DEPOT_PROJECT_TOKEN_WEBAPP }}
           push: true
           tags: ${{ env.my_docker_image }}
           context: ./front

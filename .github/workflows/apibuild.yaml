@@ -1,0 +1,110 @@
+name: API CI
+
+on:
+  push:
+    paths:
+     - '**/app/**'
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  id-token: write
+  packages: write # Allows pushing to the GitHub Container Registry
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 'actions/checkout@v3'
+        name: Checkout
+        with:
+          persist-credentials: false
+
+      - name: Validates composer.json file content
+        run: composer validate
+        working-directory: './app/api/'
+      # todo: security checker
+
+  tests-and-code-quality:
+    runs-on: ubuntu-latest
+    needs: security
+    steps:
+      - uses: 'actions/checkout@v3'
+        name: Checkout
+        with:
+          persist-credentials: false
+
+      - name: Set up Depot CLI
+        uses: 'depot/setup-action@v1'
+
+      - name: Build docker image for CI
+        id: 'build-image'
+        uses: 'depot/build-push-action@v1'
+        with:
+          project: ${{ secrets.DEPOT_PROJECT_ID_API }}
+          token: ${{ secrets.DEPOT_PROJECT_TOKEN_API }}
+          push: false
+          tags: company-version-api:test
+          context: ./app
+          load: true # (--load) to download the image to local Docker daemon
+
+      - name: Run docker container
+        id: 'container-id' # ${{ steps.container-id.outputs.stdout }} to use the container id
+        run: docker run -d --name ci_container company-version-api:test
+
+      - name: PHP unit tests
+        run: docker exec ci_container ./vendor/bin/phpunit --coverage-text
+
+      - name: PHP code standard fixer (dry run)
+        run: docker exec ci_container vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run
+
+      - name: PHP code static analyses
+        run: docker exec ci_container ./vendor/bin/phpstan analyse -c phpstan.neon
+
+      - name: Remove docker container
+        run: docker rm -f ci_container
+
+  packaging:
+    env:
+      REPOSITORY: ghcr.io/devgine
+      IMAGE: company-versioning-api
+      VERSION: ${{ github.ref_name }}
+
+    runs-on: ubuntu-latest
+    needs: tests-and-code-quality
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: 'actions/checkout@v3'
+
+      - name: Set up Depot CLI
+        uses: 'depot/setup-action@v1'
+
+      - name: Login to GitHub Container Registry
+        uses: 'docker/login-action@v1'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_REPOSITORY_TOKEN }}
+
+      # todo: push image with commit sha tag
+      - name: Process builder
+        shell: bash
+        run: |
+          echo "build_version=dev" >> $GITHUB_ENV
+          echo "my_docker_image=$REPOSITORY/$IMAGE:dev" >> $GITHUB_ENV
+          echo "build_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+
+      - name: Docker image build and push
+        uses: 'depot/build-push-action@v1'
+        with:
+          project: ${{ secrets.DEPOT_PROJECT_ID_API }}
+          token: ${{ secrets.DEPOT_PROJECT_TOKEN_API }}
+          push: true
+          tags: ${{ env.my_docker_image }}
+          context: ./app
+          build-args: |
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ env.build_date }}
+            BUILD_VERSION=${{ env.build_version }}
