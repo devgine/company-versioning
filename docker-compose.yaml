@@ -21,6 +21,7 @@ services:
       - db
     build:
       context: ./app
+      target: local
     ports:
       - '9000:9000'
     volumes:
