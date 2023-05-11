@@ -2,10 +2,14 @@
 
 namespace App\Controller\Api\V1;
 
+use App\Entity\AddressVersion;
+use App\Entity\Company;
+use App\Entity\CompanyVersion;
 use App\Manager\AddressManager;
 use App\Manager\AddressVersionManager;
 use App\Manager\CompanyManager;
 use App\Manager\CompanyVersionManager;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,27 +36,29 @@ class CompanyHistoryController extends AbstractController
     // todo add request requirement regex for id and datetime
     #[Rest\Get(path: self::ID_IN_PATH, name: 'api_v1_company_histories_get')]
     #[Rest\Head(path: self::ID_IN_PATH, name: 'api_v1_company_histories_head')]
-    public function get(int $id, \DateTimeInterface $datetime): JsonResponse
+    public function get(int $id, DateTimeInterface $datetime): JsonResponse
     {
-        if (null === $company = $this->companyManager->find($id)) {
+        $company = $this->companyManager->find($id);
+
+        if (!$company instanceof Company) {
             throw new NotFoundHttpException('Company not found.');
         }
 
         $companyVersions = $this->companyVersionManager->getLogEntriesByDate($company, $datetime);
 
-        if (null === $companyVersions) {
+        if (!$companyVersions instanceof CompanyVersion) {
             return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
         }
 
-        $this->companyVersionManager->revert($company, $companyVersions->getVersion());
+        $this->companyVersionManager->revert($company, $companyVersions->getVersion() ?? 1);
 
         $addresses = new ArrayCollection();
 
         foreach ($company->getAddresses() as $address) {
             $addressVersions = $this->addressVersionManager->getLogEntriesByDate($address, $datetime);
 
-            if (null !== $addressVersions) {
-                $this->addressVersionManager->revert($address, $addressVersions->getVersion());
+            if ($addressVersions instanceof AddressVersion) {
+                $this->addressVersionManager->revert($address, $addressVersions->getVersion() ?? 1);
                 $addresses->add($address);
             }
         }

@@ -12,6 +12,6 @@ use Gedmo\Loggable\Entity\MappedSuperclass\AbstractLogEntry;
 #[ORM\Index(columns: ['logged_at'], name: 'log_date_lookup_idx')]
 #[ORM\Index(columns: ['username'], name: 'log_user_lookup_idx')]
 #[ORM\Index(columns: ['object_id', 'object_class', 'version'], name: 'log_version_lookup_idx')]
-class CompanyVersion extends AbstractLogEntry
+class CompanyVersion extends AbstractLogEntry implements VersionInterface
 {
 }

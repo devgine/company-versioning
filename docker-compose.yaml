@@ -26,6 +26,7 @@ services:
       - '9000:9000'
     volumes:
       - './app/api:/var/www/app'
+      - './app/api/var:/var/www/app/var:cached'
 
   db:
     container_name: company-versioning-db

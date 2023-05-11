@@ -7,7 +7,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ViolationFormatter
 {
-    /** @psalm-return Violation[] $message */
+    /** @psalm-return array<Violation> */
     public function format(ConstraintViolationListInterface $violations): array
     {
         $message = [];

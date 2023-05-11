@@ -6,22 +6,27 @@ use App\Entity\Company;
 use App\Entity\CompanyVersion;
 use App\Exception\RuntimeScriptException;
 use App\Repository\CompanyVersionRepository;
+use DateTimeInterface;
 use Doctrine\ORM\EntityRepository;
 
 class CompanyVersionManager extends AbstractManager
 {
-    public function getLogEntriesByDate(Company $entity, \DateTimeInterface $datetime): ?object
+    public function getLogEntriesByDate(Company $entity, DateTimeInterface $datetime): ?object
     {
-        if (!($repository = $this->getRepository()) instanceof CompanyVersionRepository) {
+        $repository = $this->getRepository();
+
+        if (!$repository instanceof CompanyVersionRepository) {
             throw new RuntimeScriptException('Repository must be instance of AddressVersionRepository');
         }
 
         return $repository->getLogEntriesByDate($entity, $datetime);
     }
 
-    public function revert(Company $entity, $version = 1): void
+    public function revert(Company $entity, int $version = 1): void
     {
-        if (!($repository = $this->getRepository()) instanceof CompanyVersionRepository) {
+        $repository = $this->getRepository();
+
+        if (!$repository instanceof CompanyVersionRepository) {
             throw new RuntimeScriptException('Repository must be instance of AddressVersionRepository');
         }
 
@@ -33,6 +38,7 @@ class CompanyVersionManager extends AbstractManager
         return $this->entityManager->getRepository(self::getClassName());
     }
 
+    /** @psalm-return class-string<CompanyVersion> */
     public static function getClassName(): string
     {
         return CompanyVersion::class;

@@ -13,6 +13,7 @@ class AddressManager extends AbstractManager
         parent::__construct($entityManager);
     }
 
+    /** @psalm-return array<Address> */
     public function search(
         ?string $search = null,
         ?string $order = null,
@@ -28,6 +29,7 @@ class AddressManager extends AbstractManager
         return $this->repository->total($search);
     }
 
+    /** @psalm-return class-string<Address> */
     public static function getClassName(): string
     {
         return Address::class;

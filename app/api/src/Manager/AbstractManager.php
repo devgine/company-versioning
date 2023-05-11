@@ -11,18 +11,15 @@ abstract class AbstractManager implements ManagerInterface
     ) {
     }
 
-    public function flush()
+    public function flush(): void
     {
         $this->entityManager->flush();
     }
 
-    public function save(object $entity, bool $flush = true): void
+    public function save(object $entity): void
     {
         $this->entityManager->persist($entity);
-
-        if ($flush) {
-            $this->flush();
-        }
+        $this->flush();
     }
 
     public function find(int $id): ?object
@@ -30,14 +27,14 @@ abstract class AbstractManager implements ManagerInterface
         return $this->entityManager->find(static::getClassName(), $id);
     }
 
-    public function remove(object $object, bool $flush = true)
+    public function remove(object $object): void
     {
         $this->entityManager->remove($object);
-
-        if ($flush) {
-            $this->flush();
-        }
+        $this->flush();
     }
 
+    /**
+     * @psalm-return class-string
+     */
     abstract public static function getClassName(): string;
 }

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CompanyRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -37,7 +38,7 @@ class Company extends AbstractEntity
     #[Gedmo\Versioned]
     #[Groups(groups: ['get-company', 'set-company', 'get-address-company'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: false)]
-    private ?\DateTimeInterface $registrationDate = null;
+    private ?DateTimeInterface $registrationDate = null;
 
     #[Assert\NotBlank(groups: ['set-company'])]
     #[Assert\Type(type: 'int', groups: ['set-company'])]
@@ -101,12 +102,12 @@ class Company extends AbstractEntity
         return $this;
     }
 
-    public function getRegistrationDate(): ?\DateTimeInterface
+    public function getRegistrationDate(): ?DateTimeInterface
     {
         return $this->registrationDate;
     }
 
-    public function setRegistrationDate(\DateTimeInterface $registrationDate): self
+    public function setRegistrationDate(DateTimeInterface $registrationDate): self
     {
         $this->registrationDate = $registrationDate;
 
@@ -137,11 +138,13 @@ class Company extends AbstractEntity
         return $this;
     }
 
+    /** @psalm-return Collection<Address> */
     public function getAddresses(): Collection
     {
         return $this->addresses;
     }
 
+    /** @psalm-param Collection<Address> $addresses */
     public function setAddresses(Collection $addresses): self
     {
         $this->addresses = $addresses;

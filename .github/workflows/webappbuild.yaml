@@ -48,8 +48,7 @@ jobs:
         run: yarn prettier:check
         working-directory: './front/'
 
-      # todo: to be replaced with "yarn test:clover"
-      - name: Code standard check
+      - name: Unit tests
         run: yarn test:clover
         working-directory: './front/'
 

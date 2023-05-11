@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 #[AsCommand(
     name: 'app:legal-statuses:import',
@@ -30,7 +31,15 @@ class LegalStatusImportCommand extends Command
 
         try {
             $data = file_get_contents(self::FILE_PATH);
+
+            /** @psalm-var iterable<LegalStatus> $import */
             $import = $this->serializer->deserialize($data, LegalStatus::class.'[]', 'csv');
+
+            if (!is_iterable($import)) {
+                $io->success('Legal statuses list can\'t be imported.');
+
+                return Command::FAILURE;
+            }
 
             foreach ($import as $item) {
                 $this->entityManager->persist($item);
@@ -41,7 +50,7 @@ class LegalStatusImportCommand extends Command
             $io->success('Legal statuses list is successfully imported.');
 
             return Command::SUCCESS;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $io->error(sprintf('An error occurred when processing import. %s', $e->getMessage()));
 
             return Command::FAILURE;

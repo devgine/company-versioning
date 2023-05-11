@@ -18,7 +18,7 @@ export default () => (
             <NumberInput source="capital" required />
             <ReferenceInput
                 source="legalStatus"
-                reference="legalStatuses"
+                reference="legal-statuses"
                 label="label"
                 required
             >

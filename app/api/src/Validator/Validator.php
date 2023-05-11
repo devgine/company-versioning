@@ -24,8 +24,8 @@ class Validator
     }
 
     /**
-     * @psalm-param Constraint[] $constraints
-     * @psalm-param int[]|string[]|GroupSequence[] $groups
+     * @psalm-param array<Constraint> $constraints
+     * @psalm-param array<string|GroupSequence> $groups
      *
      * @psalm-return Violation[]
      */

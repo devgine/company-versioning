@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Company;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use LogicException;
 
 /**
  * @extends ServiceEntityRepository<Company>
@@ -21,24 +22,19 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
-    public function save(Company $entity, bool $flush = false): void
+    public function save(Company $entity): void
     {
         $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->flush();
     }
 
-    public function remove(Company $entity, bool $flush = false): void
+    public function remove(Company $entity): void
     {
         $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->flush();
     }
 
+    /** @psalm-return array<Company> */
     public function search(
         ?string $search = null,
         ?string $order = null,
@@ -69,7 +65,7 @@ class CompanyRepository extends ServiceEntityRepository
             $qb->setMaxResults($limit);
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery()->getArrayResult();
     }
 
     public function total(?string $search = null): int
@@ -87,6 +83,12 @@ class CompanyRepository extends ServiceEntityRepository
             $qb->setParameter('search', '%'.$search.'%');
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        $result = $qb->getQuery()->getSingleScalarResult();
+
+        if (!is_int($result)) {
+            throw new LogicException('[Companies count] Type of count must be integer.');
+        }
+
+        return $result;
     }
 }

@@ -91,8 +91,14 @@ fix: ## Runs the CS fixer to fix the project coding style.
 fix-dry-run: ## Runs the CS fixer to sniff the project coding style (without fix).
 	$(EXEC_PHP) vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache --dry-run
 
+cpd: ## Run phpcpd to detect duplicated code source
+	$(DC) exec php phpcpd src
+
+md: ## Run phpmd to detect code smells
+	$(DC) exec php phpmd src,tests ansi phpmd.xml.dist
+
 phpstan: ## Run phpstan analyses.
-	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon
+	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=512M
 
 lint: ## Run the ESLinter to analyse typescript code.
 	$(EXEC_NODE) yarn lint
@@ -127,7 +133,7 @@ ci: ## Execute all tests and linters in a single command.
 .PHONY: security-php security-node security
 
 security-php: ## Identify vulnerabilities in PHP dependencies.
-	./local-php-security-checker --path=./symfony/composer.lock
+	$(DC) exec $(PHP_CONTAINER) symfony security:check
 
 security-node: ## Identify vulnerabilities in node packages.
 	$(EXEC_NODE) yarn audit

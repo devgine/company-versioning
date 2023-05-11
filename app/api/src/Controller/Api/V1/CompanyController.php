@@ -7,6 +7,7 @@ use App\Manager\CompanyManager;
 use App\Validator\Validator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,11 +60,11 @@ class CompanyController extends AbstractController
     #[Rest\Get(name: 'api_v1_companies_get_collection')]
     public function getCollection(ParamFetcher $paramFetcher): JsonResponse
     {
-        $start = $paramFetcher->get('_start');
-        $end = $paramFetcher->get('_end');
-        $order = $paramFetcher->get('_order');
-        $sort = $paramFetcher->get('_sort');
-        $search = $paramFetcher->get('search') ?? $paramFetcher->get('q');
+        /** @psalm-var int $start */ $start = $paramFetcher->get('_start');
+        /** @psalm-var int $end */ $end = $paramFetcher->get('_end');
+        /** @psalm-var string $order */ $order = $paramFetcher->get('_order');
+        /** @psalm-var string $sort */ $sort = $paramFetcher->get('_sort');
+        /** @psalm-var string $search */ $search = $paramFetcher->get('search') ?? $paramFetcher->get('q');
 
         return $this->json(
             data: $this->companyManager->search(
@@ -82,7 +83,9 @@ class CompanyController extends AbstractController
     #[Rest\Head(path: self::ID_IN_PATH, name: 'api_v1_companies_head')]
     public function get(int $id): JsonResponse
     {
-        if (null === $company = $this->companyManager->find($id)) {
+        $company = $this->companyManager->find($id);
+
+        if (!$company instanceof Company) {
             throw new NotFoundHttpException('Company not found.');
         }
 
@@ -92,7 +95,9 @@ class CompanyController extends AbstractController
     #[Rest\Delete(path: self::ID_IN_PATH, name: 'api_v1_companies_delete')]
     public function delete(int $id): JsonResponse
     {
-        if (null === $company = $this->companyManager->find($id)) {
+        $company = $this->companyManager->find($id);
+
+        if (!$company instanceof Company) {
             throw new NotFoundHttpException('Company not found.');
         }
 
@@ -110,20 +115,36 @@ class CompanyController extends AbstractController
             context: ['groups' => ['set-company']]
         );
 
-        if (null !== $violations = $this->validator->validate(object: $company, groups: 'set-company')) {
-            throw new BadRequestHttpException(json_encode($violations));
+        if (!$company instanceof Company) {
+            throw new LogicException('Error Company denormalization');
+        }
+
+        $violations = $this->validator->validate(object: $company, groups: 'set-company');
+
+        if (null !== $violations) {
+            $jsonMessage = json_encode($violations);
+
+            throw new BadRequestHttpException(
+                is_string($jsonMessage) ? $jsonMessage : '[Create company] Company is not valid.'
+            );
         }
 
         $this->companyManager->save($company);
 
-        return $this->json(data: $company, status: Response::HTTP_CREATED, context: ['groups' => ['get', 'get-company']]);
+        return $this->json(
+            data: $company,
+            status: Response::HTTP_CREATED,
+            context: ['groups' => ['get', 'get-company']]
+        );
     }
 
     #[Rest\Put(path: self::ID_IN_PATH, name: 'api_v1_companies_put')]
     #[Rest\Patch(path: self::ID_IN_PATH, name: 'api_v1_companies_patch')]
     public function update(int $id, Request $request): JsonResponse
     {
-        if (null === $company = $this->companyManager->find($id)) {
+        $company = $this->companyManager->find($id);
+
+        if (!$company instanceof Company) {
             throw new NotFoundHttpException(sprintf('Company not found with id %d', $id));
         }
 
@@ -137,8 +158,14 @@ class CompanyController extends AbstractController
             ]
         );
 
-        if (null !== $violations = $this->validator->validate(object: $company, groups: ['set-company'])) {
-            throw new BadRequestHttpException(json_encode($violations));
+        $violations = $this->validator->validate(object: $company, groups: ['set-company']);
+
+        if (null !== $violations) {
+            $jsonMessage = json_encode($violations);
+
+            throw new BadRequestHttpException(
+                is_string($jsonMessage) ? $jsonMessage : '[Update company] Company is not valid.'
+            );
         }
 
         $this->companyManager->save($company);

@@ -5,11 +5,10 @@ on:
     paths:
      - '**/app/**'
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   id-token: write
-  packages: write # Allows pushing to the GitHub Container Registry
+  packages: write # Allows push and delete GitHub packages
 
 jobs:
   security:
@@ -23,46 +22,98 @@ jobs:
       - name: Validates composer.json file content
         run: composer validate
         working-directory: './app/api/'
-      # todo: security checker
 
-  tests-and-code-quality:
+      - name: Symfony security checker
+        uses: 'symfonycorp/security-checker-action@v4'
+        with:
+          lock: ./app/api/composer.lock
+
+  build:
     runs-on: ubuntu-latest
     needs: security
+    # @see https://docs.github.com/fr/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idoutputs
+    #outputs:
+    #  docker-image-output: ${{ steps.docker-image.outputs.stdout }}
     steps:
       - uses: 'actions/checkout@v3'
         name: Checkout
         with:
           persist-credentials: false
 
+      - name: Login to GitHub Container Registry
+        uses: 'docker/login-action@v1'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_REPOSITORY_TOKEN }}
+
       - name: Set up Depot CLI
         uses: 'depot/setup-action@v1'
 
+      # todo: replace ci tag by commit sha
+      # @see https://github.com/depot/build-push-action
       - name: Build docker image for CI
-        id: 'build-image'
+        id: 'docker-image'
         uses: 'depot/build-push-action@v1'
         with:
           project: ${{ secrets.DEPOT_PROJECT_ID_API }}
           token: ${{ secrets.DEPOT_PROJECT_TOKEN_API }}
-          push: false
-          tags: company-version-api:test
+          push: true
+          tags: ghcr.io/devgine/company-versioning-api:ci
+          target: ci
           context: ./app
-          load: true # (--load) to download the image to local Docker daemon
+          #load: true # (--load) to download the image to local Docker daemon
 
-      - name: Run docker container
-        id: 'container-id' # ${{ steps.container-id.outputs.stdout }} to use the container id
-        run: docker run -d --name ci_container company-version-api:test
-
-      - name: PHP unit tests
-        run: docker exec ci_container ./vendor/bin/phpunit --coverage-text
-
+  quality:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: ghcr.io/devgine/company-versioning-api:ci
+      env:
+        PHP_CS_FIXER_IGNORE_ENV: 1
+    steps:
+      # todo: add cache
       - name: PHP code standard fixer (dry run)
-        run: docker exec ci_container vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run
+        working-directory: /var/www/app
+        run: ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run
+
+      - name: PHP Mess Detector
+        working-directory: /var/www/app
+        run: phpmd src,tests github phpmd.xml.dist
+
+      - name: PHP Copy Paste Detector
+        working-directory: /var/www/app
+        run: phpcpd src
 
       - name: PHP code static analyses
-        run: docker exec ci_container ./vendor/bin/phpstan analyse -c phpstan.neon
+        working-directory: /var/www/app
+        run: ./vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=256M
 
-      - name: Remove docker container
-        run: docker rm -f ci_container
+  tests:
+    runs-on: ubuntu-latest
+    needs: build
+    container: ghcr.io/devgine/company-versioning-api:ci
+
+    steps:
+      # todo: add cache
+      - name: PHP unit tests
+        working-directory: /var/www/app
+        run: ./vendor/bin/phpunit
+        #uses: docker://ghcr.io/symfony-examples/doctrine-mongodb:ci
+
+  #clean:
+  #  runs-on: ubuntu-latest
+  #  # @see https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow#example-not-requiring-successful-dependent-jobs
+  #  if: ${{ always() }}
+  #  needs: [quality, tests]
+  #  steps:
+  #    - name: Delete ci docker image
+  #      uses: actions/delete-package-versions@v4
+  #      with:
+  #        package-version-ids: ci
+  #        package-name: 'company-versioning-api'
+  #        package-type: 'container'
+  #        token: ${{ secrets.GH_REPOSITORY_TOKEN }}
 
   packaging:
     env:
@@ -71,7 +122,7 @@ jobs:
       VERSION: ${{ github.ref_name }}
 
     runs-on: ubuntu-latest
-    needs: tests-and-code-quality
+    needs: [quality, tests]
     if: github.ref == 'refs/heads/main'
 
     steps:
@@ -88,12 +139,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GH_REPOSITORY_TOKEN }}
 
-      # todo: push image with commit sha tag
       - name: Process builder
         shell: bash
         run: |
           echo "build_version=dev" >> $GITHUB_ENV
-          echo "my_docker_image=$REPOSITORY/$IMAGE:dev" >> $GITHUB_ENV
+          echo "my_docker_image=$REPOSITORY/$IMAGE:${{ github.sha }},$REPOSITORY/$IMAGE:dev" >> $GITHUB_ENV
           echo "build_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
 
       - name: Docker image build and push
@@ -103,6 +153,7 @@ jobs:
           token: ${{ secrets.DEPOT_PROJECT_TOKEN_API }}
           push: true
           tags: ${{ env.my_docker_image }}
+          target: devenv
           context: ./app
           build-args: |
             VCS_REF=${{ github.sha }}

@@ -13,6 +13,7 @@ class CompanyManager extends AbstractManager
         parent::__construct($entityManager);
     }
 
+    /** @psalm-return array<Company> */
     public function search(
         ?string $search = null,
         ?string $order = null,
@@ -28,6 +29,7 @@ class CompanyManager extends AbstractManager
         return $this->repository->total($search);
     }
 
+    /** @psalm-return class-string<Company> */
     public static function getClassName(): string
     {
         return Company::class;
