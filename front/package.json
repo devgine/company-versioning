@@ -1,40 +1,48 @@
 {
-    "name": "app",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "tsc && vite build",
-        "build:ci": "env-cmd -f .env.ci yarn build --base ./",
-        "build:prod": "env-cmd -f .env.prod yarn build",
-        "predeploy": "yarn build:ci",
-        "deploy": "gh-pages -d dist",
-        "preview": "vite preview",
-        "host": "vite --host",
-        "lint": "eslint --cache --cache-location ./.eslintcache --color --quiet .",
-        "prettier": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --write \"**/*.+(js|ts|tsx|json)\"",
-        "prettier-check": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --check \"**/*.+(js|ts|tsx|json)\""
-    },
-    "homepage": "https://devgine.github.io/company-versionnig/",
-    "dependencies": {
-        "env-cmd": "^10.1.0",
-        "ra-data-json-server": "^4.9.0",
-        "react": "^18.2.0",
-        "react-admin": "^4.9.0",
-        "react-dom": "^18.2.0"
-    },
-    "devDependencies": {
-        "@types/react": "^18.0.28",
-        "@types/react-dom": "^18.0.11",
-        "@typescript-eslint/eslint-plugin": "^5.59.1",
-        "@typescript-eslint/parser": "^5.59.1",
-        "@vitejs/plugin-react": "^3.1.0",
-        "eslint": "^8.39.0",
-        "gh-pages": "^5.0.0",
-        "prettier": "2.8.8",
-        "ra-data-fakerest": "^4.10.1",
-        "typescript": "^5.0.4",
-        "vite": "^4.2.1"
-    }
+  "name": "app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:ci": "env-cmd -f .env.ci yarn build --base ./",
+    "build:prod": "env-cmd -f .env.prod yarn build",
+    "predeploy": "yarn build:ci",
+    "deploy": "gh-pages -d dist",
+    "preview": "vite preview",
+    "host": "vite --host",
+    "lint": "eslint --cache --cache-location ./.eslintcache --color --quiet .",
+    "prettier": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --write \"**/*.+(js|ts|tsx|json)\"",
+    "prettier:check": "prettier --config ./.prettierrc.cjs --cache --cache-location ./.prettiercache --check \"**/*.+(js|ts|tsx|json)\"",
+    "test": "jest",
+    "test:clover": "jest --coverage --coverageReporters=clover",
+    "test:coverage": "jest --coverage"
+  },
+  "homepage": "https://devgine.github.io/company-versionnig/",
+  "dependencies": {
+    "env-cmd": "^10.1.0",
+    "ra-data-json-server": "^4.9.0",
+    "react": "^18.2.0",
+    "react-admin": "^4.9.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@types/jest": "^29.5.1",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "@vitejs/plugin-react": "^3.1.0",
+    "eslint": "^8.39.0",
+    "gh-pages": "^5.0.0",
+    "jest": "^29.5.0",
+    "prettier": "2.8.8",
+    "ra-data-fakerest": "^4.10.1",
+    "ts-jest": "^29.1.0",
+    "ts-jest-mock-import-meta": "^1.0.0",
+    "typescript": "^5.0.4",
+    "vite": "^4.2.1"
+  }
 }

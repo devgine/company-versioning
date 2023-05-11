@@ -12,7 +12,7 @@ module.exports = {
     plugins: ['@typescript-eslint'],
     root: true,
     ignorePatterns: [
-        'src/**/*.test.ts',
+        'tests',
         'src/frontend/generated/*',
     ]
 };

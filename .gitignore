@@ -7,7 +7,20 @@
 /app/api/public/bundles/
 /app/api/var/
 /app/api/vendor/
+###> friendsofphp/php-cs-fixer ###
+/app/api/.php-cs-fixer.php
+/app/api/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> symfony/phpunit-bridge ###
+/app/api/.phpunit.result.cache
+/app/api/.phpunit.cache
+/app/api/phpunit.xml
+/app/api/public/coverage
+###< symfony/phpunit-bridge ###
+
 ###< symfony/framework-bundle ###
+
 
 
 # Logs
@@ -26,3 +39,5 @@
 
 /front/.eslintcache
 /front/.prettiercache
+
+/front/coverage

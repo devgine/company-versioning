@@ -8,10 +8,10 @@
     "include": [
         "src",
         "vite.config.ts",
-        "tools/**/*.ts",
-        ".eslintrc.js",
-        "jest.config.base.js",
-        "jest.config.js",
-        "jest.preset.js"
+        //"tools/**/*.ts",
+        ".eslintrc.cjs",
+        //"jest.config.base.js",
+        "jest.config.cjs"
+        //"jest.preset.js"
     ]
 }

@@ -4,10 +4,12 @@ namespace App\Controller\Api\V1;
 
 use App\Entity\Address;
 use App\Entity\Company;
+use App\Manager\AddressManager;
+use App\Manager\CompanyManager;
 use App\Validator\Validator;
-use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,11 +27,10 @@ class AddressController extends AbstractController
     public const GET_GROUPS = ['get', 'get-address', 'get-address-company'];
 
     public function __construct(
-        protected EntityManagerInterface $em,
+        protected AddressManager $addressManager,
         protected Validator $validator,
         protected DenormalizerInterface $denormalizer
-    )
-    {
+    ) {
     }
 
     #[Rest\QueryParam(
@@ -58,21 +59,21 @@ class AddressController extends AbstractController
     #[Rest\Get(name: 'api_v1_addresses_get_collection')]
     public function getCollection(ParamFetcher $paramFetcher): JsonResponse
     {
-        $start = $paramFetcher->get('_start');
-        $end = $paramFetcher->get('_end');
-        $order = $paramFetcher->get('_order');
-        $sort = $paramFetcher->get('_sort');
-        $search = $paramFetcher->get('search');
+        /** @psalm-var int $start */ $start = $paramFetcher->get('_start');
+        /** @psalm-var int $end */ $end = $paramFetcher->get('_end');
+        /** @psalm-var string $order */ $order = $paramFetcher->get('_order');
+        /** @psalm-var string $sort */ $sort = $paramFetcher->get('_sort');
+        /** @psalm-var string $search */ $search = $paramFetcher->get('search');
 
         return $this->json(
-            data: $this->em->getRepository(Address::class)->search(
+            data: $this->addressManager->search(
                 search: $search,
                 order: $order,
                 sort: $sort,
                 limit: $end - $start,
                 offset: $start
             ),
-            headers: ['X-Total-Count' => $this->em->getRepository(Address::class)->total($search)],
+            headers: ['X-Total-Count' => $this->addressManager->total($search)],
             context: ['groups' => self::GET_GROUPS]
         );
     }
@@ -81,7 +82,9 @@ class AddressController extends AbstractController
     #[Rest\Head(path: self::ID_IN_PATH, name: 'api_v1_addresses_head')]
     public function get(int $id): JsonResponse
     {
-        if (null === $address = $this->em->find(Address::class, $id)) {
+        $address = $this->addressManager->find($id);
+
+        if (!$address instanceof Address) {
             throw new NotFoundHttpException('Address not found.');
         }
 
@@ -91,18 +94,19 @@ class AddressController extends AbstractController
     #[Rest\Delete(path: self::ID_IN_PATH, name: 'api_v1_addresses_delete')]
     public function delete(int $id): JsonResponse
     {
-        if (null === $address = $this->em->find(Company::class, $id)) {
+        $address = $this->addressManager->find($id);
+
+        if (null === $address) {
             throw new NotFoundHttpException('Address not found.');
         }
 
-        $this->em->remove($address);
-        $this->em->flush();
+        $this->addressManager->remove($address);
 
         return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
     }
 
     #[Rest\Post(name: 'api_v1_addresses_post')]
-    public function post(Request $request): JsonResponse
+    public function post(Request $request, CompanyManager $companyManager): JsonResponse
     {
         $address = $this->denormalizer->denormalize(
             data: $request->request->all(),
@@ -110,18 +114,32 @@ class AddressController extends AbstractController
             context: ['groups' => ['set-address']]
         );
 
-        $companyId = $request->request->all()['company_id'];
+        if (!$address instanceof Address) {
+            throw new LogicException('Error Address denormalization');
+        }
 
-        if (null === $company = $this->em->find(Company::class, $companyId)) {
+        if (!array_key_exists('company_id', $request->request->all())) {
+            throw new BadRequestHttpException('company_id is required.');
+        }
+
+        $violations = $this->validator->validate(object: $address, groups: ['set-address']);
+
+        if (null !== $violations) {
+            $jsonMessage = json_encode($violations);
+
+            throw new BadRequestHttpException(
+                is_string($jsonMessage) ? $jsonMessage : '[Create address] Address is not valid.'
+            );
+        }
+
+        $companyId = $request->request->all()['company_id'];
+        $company = $companyManager->find($companyId);
+
+        if (!$company instanceof Company) {
             throw new NotFoundHttpException('Company not found.');
         }
 
-        if (null !== $violations = $this->validator->validate(object: $address, groups: ['set-address'])) {
-            throw new BadRequestHttpException(json_encode($violations));
-        }
-
-        $this->em->persist($address->setCompany($company));
-        $this->em->flush();
+        $this->addressManager->save($address->setCompany($company));
 
         return $this->json(data: $address, status: Response::HTTP_CREATED, context: ['groups' => 'get-address']);
     }
@@ -130,7 +148,9 @@ class AddressController extends AbstractController
     #[Rest\Patch(path: self::ID_IN_PATH, name: 'api_v1_addresses_patch')]
     public function update(int $id, Request $request): JsonResponse
     {
-        if (null === $address = $this->em->find(Address::class, $id)) {
+        $address = $this->addressManager->find($id);
+
+        if (!$address instanceof Address) {
             throw new NotFoundHttpException(sprintf('Company not found with id %d', $id));
         }
 
@@ -140,16 +160,21 @@ class AddressController extends AbstractController
             context: [
                 'groups' => ['set-address'],
                 AbstractNormalizer::OBJECT_TO_POPULATE => $address,
-                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true
+                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,
             ]
         );
 
-        if (null !== $violations = $this->validator->validate(object: $address, groups: ['set-address'])) {
-            throw new BadRequestHttpException(json_encode($violations));
+        $violations = $this->validator->validate(object: $address, groups: ['set-address']);
+
+        if (null !== $violations) {
+            $jsonMessage = json_encode($violations);
+
+            throw new BadRequestHttpException(
+                is_string($jsonMessage) ? $jsonMessage : '[Update address] Address is not valid.'
+            );
         }
 
-        $this->em->persist($address);
-        $this->em->flush();
+        $this->addressManager->save($address);
 
         return $this->json(data: $address, context: ['groups' => self::GET_GROUPS]);
     }

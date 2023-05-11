@@ -10,7 +10,7 @@ import {
 import { Box, Typography, Card } from '@mui/material';
 
 import { CompanyHistoryShow } from './CompanyHistoryShow';
-import { isValid } from '../../helpers/Datetime';
+import { DateTimeIsValid } from '../../helpers/Datetime';
 
 const HistoryFormToolbar = () => {
     const notify = useNotify();
@@ -31,7 +31,7 @@ const HistoryFormToolbar = () => {
             return null;
         }
 
-        if (!isValid(datetime)) {
+        if (!DateTimeIsValid(datetime)) {
             notify('Invalid datetime passed', { type: 'error' });
 
             return null;

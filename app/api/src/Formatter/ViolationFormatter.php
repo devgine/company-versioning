@@ -2,20 +2,22 @@
 
 namespace App\Formatter;
 
+use App\Model\Violation;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ViolationFormatter
 {
-    public function format(ConstraintViolationListInterface $violations): ?array
+    /** @psalm-return array<Violation> */
+    public function format(ConstraintViolationListInterface $violations): array
     {
         $message = [];
 
         foreach ($violations as $violation) {
-            $message[] = [
-                'message' => $violation->getMessage(),
-                'property' => $violation->getPropertyPath(),
-                'value' => $violation->getInvalidValue(),
-            ];
+            $message[] = new Violation(
+                message: $violation->getMessage(),
+                property: $violation->getPropertyPath(),
+                value: $violation->getInvalidValue()
+            );
         }
 
         return $message;

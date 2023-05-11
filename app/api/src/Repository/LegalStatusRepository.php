@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\LegalStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use LogicException;
 
 /**
  * @extends ServiceEntityRepository<LegalStatus>
@@ -21,24 +22,19 @@ class LegalStatusRepository extends ServiceEntityRepository
         parent::__construct($registry, LegalStatus::class);
     }
 
-    public function save(LegalStatus $entity, bool $flush = false): void
+    public function save(LegalStatus $entity): void
     {
         $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->flush();
     }
 
-    public function remove(LegalStatus $entity, bool $flush = false): void
+    public function remove(LegalStatus $entity): void
     {
         $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->flush();
     }
 
+    /** @psalm-return array<LegalStatus> */
     public function search(
         ?string $search = null,
         ?string $order = null,
@@ -66,7 +62,7 @@ class LegalStatusRepository extends ServiceEntityRepository
             $qb->setMaxResults($limit);
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery()->getArrayResult();
     }
 
     public function total(?string $search = null): int
@@ -81,6 +77,12 @@ class LegalStatusRepository extends ServiceEntityRepository
             $qb->setParameter('search', '%'.$search.'%');
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        $result = $qb->getQuery()->getSingleScalarResult();
+
+        if (!is_int($result)) {
+            throw new LogicException('[Legal statuses count] Type of count must be integer.');
+        }
+
+        return $result;
     }
 }

@@ -1,0 +1,28 @@
+name: Packages retention policy
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prune API CI docker image
+        continue-on-error: true
+        uses: 'actions/delete-package-versions@v4'
+        with:
+          package-name: 'company-versioning-api'
+          package-type: 'container'
+          delete-only-untagged-versions: true
+          token: ${{ secrets.GH_REPOSITORY_TOKEN }}
+
+      - name: Prune WEBAPP CI docker image
+        continue-on-error: true
+        uses: 'actions/delete-package-versions@v4'
+        with:
+          package-name: 'company-versioning-webapp'
+          package-type: 'container'
+          delete-only-untagged-versions: true
+          token: ${{ secrets.GH_REPOSITORY_TOKEN }}

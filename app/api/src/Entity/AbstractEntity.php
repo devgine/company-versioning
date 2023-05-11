@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -17,36 +18,36 @@ class AbstractEntity
     #[Gedmo\Timestampable(on: 'create')]
     #[Groups(groups: ['get'])]
     #[ORM\Column(type: 'datetime', nullable: false)]
-    protected ?\DateTimeInterface $createdDate;
+    protected ?DateTimeInterface $createdDate;
 
     #[Gedmo\Timestampable(on: 'update')]
     #[Groups(groups: ['get'])]
     #[ORM\Column(type: 'datetime', nullable: false)]
-    protected ?\DateTimeInterface $lastUpdateDate;
+    protected ?DateTimeInterface $lastUpdateDate;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCreatedDate(): ?\DateTimeInterface
+    public function getCreatedDate(): ?DateTimeInterface
     {
         return $this->createdDate;
     }
 
-    public function setCreatedDate(?\DateTimeInterface $createdDate): self
+    public function setCreatedDate(?DateTimeInterface $createdDate): self
     {
         $this->createdDate = $createdDate;
 
         return $this;
     }
 
-    public function getLastUpdateDate(): ?\DateTimeInterface
+    public function getLastUpdateDate(): ?DateTimeInterface
     {
         return $this->lastUpdateDate;
     }
 
-    public function setLastUpdateDate(?\DateTimeInterface $lastUpdateDate): self
+    public function setLastUpdateDate(?DateTimeInterface $lastUpdateDate): self
     {
         $this->lastUpdateDate = $lastUpdateDate;
 

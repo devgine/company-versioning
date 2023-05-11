@@ -9,7 +9,7 @@ import {
     RecordContextProvider,
     useNotify,
 } from 'react-admin';
-import { isValid } from '../../helpers/Datetime';
+import { DateTimeIsValid } from '../../helpers/Datetime';
 import { CompanyHistoryRequestInterface } from '../../DTO/CompanyHistoryRequestInterface';
 import { UseGetOneResponseInterface } from '../../DTO/ClientResponseInterface';
 
@@ -22,7 +22,7 @@ export const CompanyHistoryShow = (props: CompanyHistoryRequestInterface) => {
         return null;
     }
 
-    const datetimeTz = isValid(datetime);
+    const datetimeTz = DateTimeIsValid(datetime);
 
     if (!datetimeTz) {
         notify(

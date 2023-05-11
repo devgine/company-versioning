@@ -1,13 +1,16 @@
 name: Web APP CI
 
 on:
-  push
+  push:
+    paths:
+      - '**/front/**'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
-  pages: write
+  pages: write # Allows deployment to the GitHub page
   id-token: write
+  packages: write # Allows pushing to the GitHub Container Registry
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
@@ -42,9 +45,13 @@ jobs:
         working-directory: './front/'
 
       - name: Code standard check
-        run: yarn prettier-check
+        run: yarn prettier:check
         working-directory: './front/'
-      # todo: add tests
+
+      - name: Unit tests
+        run: yarn test:clover
+        working-directory: './front/'
+
       - name: Build
         run: yarn build:ci
         working-directory: './front/'
@@ -72,3 +79,49 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: 'actions/deploy-pages@v2'
+
+  # todo: add cypress stage before packaging
+  packaging:
+    env:
+      REPOSITORY: ghcr.io/devgine
+      IMAGE: company-versioning-webapp
+      VERSION: ${{ github.ref_name }}
+
+    runs-on: ubuntu-latest
+    needs: deploy # todo: update to cypress job when it's created
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: 'actions/checkout@v3'
+
+      - name: Set up Depot CLI
+        uses: 'depot/setup-action@v1'
+
+      - name: Login to GitHub Container Registry
+        uses: 'docker/login-action@v1'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_REPOSITORY_TOKEN }}
+
+      # todo: push image with commit sha tag
+      - name: Process builder
+        shell: bash
+        run: |
+          echo "build_version=dev" >> $GITHUB_ENV
+          echo "my_docker_image=$REPOSITORY/$IMAGE:dev" >> $GITHUB_ENV
+          echo "build_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+
+      - name: Docker image build and push
+        uses: 'depot/build-push-action@v1'
+        with:
+          project: ${{ secrets.DEPOT_PROJECT_ID_WEBAPP }}
+          token: ${{ secrets.DEPOT_PROJECT_TOKEN_WEBAPP }}
+          push: true
+          tags: ${{ env.my_docker_image }}
+          context: ./front
+          build-args: |
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ env.build_date }}
+            BUILD_VERSION=${{ env.build_version }}

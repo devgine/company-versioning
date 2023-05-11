@@ -136,7 +136,7 @@ export default fakeDataProvider({
             lastUpdateDate: '2023-04-20T22:17:31+00:00',
         },
     ],
-    legalStatuses: [
+    'legal-statuses': [
         {
             label: 'Societe',
             id: 1,
