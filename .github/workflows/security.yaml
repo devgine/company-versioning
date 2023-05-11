@@ -1,4 +1,4 @@
-name: Check vulnerabilities
+name: Vulnerabilities Checker
 
 on:
   workflow_dispatch:

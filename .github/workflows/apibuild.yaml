@@ -101,20 +101,6 @@ jobs:
         run: ./vendor/bin/phpunit
         #uses: docker://ghcr.io/symfony-examples/doctrine-mongodb:ci
 
-  #clean:
-  #  runs-on: ubuntu-latest
-  #  # @see https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow#example-not-requiring-successful-dependent-jobs
-  #  if: ${{ always() }}
-  #  needs: [quality, tests]
-  #  steps:
-  #    - name: Delete ci docker image
-  #      uses: actions/delete-package-versions@v4
-  #      with:
-  #        package-version-ids: ci
-  #        package-name: 'company-versioning-api'
-  #        package-type: 'container'
-  #        token: ${{ secrets.GH_REPOSITORY_TOKEN }}
-
   packaging:
     env:
       REPOSITORY: ghcr.io/devgine
