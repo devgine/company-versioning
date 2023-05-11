@@ -1,6 +1,8 @@
 # company-versioning-api
 [![Web APP CI](https://github.com/devgine/company-versioning/actions/workflows/webappbuild.yaml/badge.svg?branch=main)](https://github.com/devgine/company-versioning/actions/workflows/webappbuild.yaml?query=branch%3Amain)
 [![API CI](https://github.com/devgine/company-versioning/actions/workflows/apibuild.yaml/badge.svg?branch=main)](https://github.com/devgine/company-versioning/actions/workflows/apibuild.yaml?query=branch%3Amain)
+[![Vulnerabilities checker](https://github.com/devgine/company-versioning/actions/workflows/security.yaml/badge.svg)](https://github.com/devgine/company-versioning/actions/workflows/security.yaml)
+[![Packages retention policy](https://github.com/devgine/company-versioning/actions/workflows/packages-retention-policy.yaml/badge.svg)](https://github.com/devgine/company-versioning/actions/workflows/packages-retention-policy.yaml)
 
 ## References
 ### Yarn
