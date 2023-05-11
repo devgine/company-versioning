@@ -129,7 +129,7 @@ jobs:
         shell: bash
         run: |
           echo "build_version=dev" >> $GITHUB_ENV
-          echo "my_docker_image=$REPOSITORY/$IMAGE:${{ github.sha }},$REPOSITORY/$IMAGE:dev" >> $GITHUB_ENV
+          echo "my_docker_image=$REPOSITORY/$IMAGE:dev,$REPOSITORY/$IMAGE:${{ github.sha }}" >> $GITHUB_ENV
           echo "build_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
 
       - name: Docker image build and push

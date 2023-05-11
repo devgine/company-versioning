@@ -38,6 +38,26 @@ COPY --from=prod-builder /app/dist /app
 
 EXPOSE 80
 
+## build the project for production
+FROM builder as devenv-builder
+
+RUN yarn build:dev
+
+### PROD STAGE
+FROM nginx:1.16-alpine as devenv-webapp
+
+WORKDIR /app
+
+COPY ./.docker/nginx/default.conf /etc/nginx/nginx.conf
+
+## Remove default nginx index page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy from the stahg 1
+COPY --from=devenv-builder /app/dist /app
+
+EXPOSE 80
+
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
 ### DEV STAGE
