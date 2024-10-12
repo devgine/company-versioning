@@ -3,6 +3,7 @@ parameters:
     checkGenericClassInNonGenericObjectType: false
     paths:
         - src
+        - tests
     ignoreErrors:
         -
             message: '#^Method App\\Repository\\+[a-zA-Z]+Repository\:\:search\(\) should return array\<App\\Entity\\+[a-zA-Z]+\> but returns array\.$#'

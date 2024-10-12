@@ -17,7 +17,7 @@ class ValidatorTest extends TestCase
 {
     private Validator $validator;
 
-    private ValidatorInterface|MockObject $validatorInterface;
+    private ValidatorInterface&MockObject $validatorInterface;
 
     /**
      * @throws Exception
@@ -28,8 +28,13 @@ class ValidatorTest extends TestCase
         $this->validator = new Validator($this->validatorInterface, new ViolationFormatter());
     }
 
-    /** @dataProvider providerObjects */
-    public function testValidate($constraintViolationList, $expectedResult)
+    /**
+     * @param array<Violation> $expectedResult
+     * @param array<ConstraintViolation> $constraintViolationList
+     *
+     * @dataProvider providerObjects
+     */
+    public function testValidate(array $constraintViolationList, array $expectedResult): void
     {
         $this->validatorInterface
             ->expects($this->once())
@@ -39,6 +44,9 @@ class ValidatorTest extends TestCase
         $this->assertEquals($expectedResult, $this->validator->validate(new Company()));
     }
 
+    /**
+     * @return mixed[]
+     */
     public static function providerObjects(): array
     {
         return [

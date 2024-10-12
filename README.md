@@ -39,3 +39,7 @@ https://github.com/marmelab/react-admin/blob/master/packages/ra-data-fakerest/RE
 [Jest](https://jestjs.io/docs/getting-started#using-typescript)
 [Jest typescript config example](https://www.testim.io/blog/typescript-unit-testing-101/)
 [react-testing-library](https://github.com/testing-library/react-testing-library)
+
+### phpstorm config
+
+https://www.brocksi.net/blog/configure-phpstan-phpstorm-use-php-docker-container/

@@ -10,12 +10,20 @@ use Symfony\Component\Validator\ConstraintViolationList;
 
 class ViolationFormatterTest extends TestCase
 {
-    /** @dataProvider providerViolations */
-    public function testFormat($input, $expectedResult)
+    /**
+     * @param array<ConstraintViolation> $input
+     * @param array<Violation> $expectedResult
+     *
+     * @dataProvider providerViolations
+     */
+    public function testFormat(array $input, array $expectedResult): void
     {
         $this->assertEquals($expectedResult, (new ViolationFormatter())->format(new ConstraintViolationList($input)));
     }
 
+    /**
+     * @return mixed[]
+     */
     public static function providerViolations(): array
     {
         return [
