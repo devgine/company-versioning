@@ -22,7 +22,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws Exception
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validatorInterface = $this->createMock(ValidatorInterface::class);
         $this->validator = new Validator($this->validatorInterface, new ViolationFormatter());
@@ -37,11 +37,11 @@ class ValidatorTest extends TestCase
     public function testValidate(array $constraintViolationList, array $expectedResult): void
     {
         $this->validatorInterface
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('validate')
             ->willReturn(new ConstraintViolationList($constraintViolationList));
 
-        $this->assertEquals($expectedResult, $this->validator->validate(new Company()));
+        self::assertEquals($expectedResult, $this->validator->validate(new Company()));
     }
 
     /**

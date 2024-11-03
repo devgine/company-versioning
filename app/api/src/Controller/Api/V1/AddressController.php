@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Api\V1;
 
 use App\Entity\Address;
@@ -16,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -105,6 +108,9 @@ class AddressController extends AbstractController
         return $this->json(data: [], status: Response::HTTP_NO_CONTENT);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     #[Rest\Post(name: 'api_v1_addresses_post')]
     public function post(Request $request, CompanyManager $companyManager): JsonResponse
     {
@@ -144,6 +150,9 @@ class AddressController extends AbstractController
         return $this->json(data: $address, status: Response::HTTP_CREATED, context: ['groups' => 'get-address']);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     #[Rest\Put(path: self::ID_IN_PATH, name: 'api_v1_addresses_put')]
     #[Rest\Patch(path: self::ID_IN_PATH, name: 'api_v1_addresses_patch')]
     public function update(int $id, Request $request): JsonResponse

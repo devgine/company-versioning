@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\AbstractEntity;
 use App\Entity\VersionInterface;
 use DateTimeInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
 use Gedmo\Tool\Wrapper\EntityWrapper;
 use LogicException;
@@ -13,6 +16,8 @@ abstract class AbstractVersionRepository extends LogEntryRepository
 {
     /**
      * @psalm-return <VersionInterface>
+     *
+     * @throws NonUniqueResultException
      */
     public function findLogEntriesByDate(AbstractEntity $entity, DateTimeInterface $datetime): ?object
     {

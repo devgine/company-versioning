@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @see https://mlocati.github.io/php-cs-fixer-configurator/#version:3.16
  */

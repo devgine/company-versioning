@@ -18,7 +18,7 @@ class ViolationFormatterTest extends TestCase
      */
     public function testFormat(array $input, array $expectedResult): void
     {
-        $this->assertEquals($expectedResult, (new ViolationFormatter())->format(new ConstraintViolationList($input)));
+        self::assertEquals($expectedResult, (new ViolationFormatter())->format(new ConstraintViolationList($input)));
     }
 
     /**

@@ -2,7 +2,7 @@
 ##------------------------------------------------------ Makefile ------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------------------------
 
-DC=docker-compose
+DC=docker compose
 PHP_CONTAINER=php
 NODE_CONTAINER=front
 EXEC_PHP=$(DC) exec $(PHP_CONTAINER) php
@@ -16,7 +16,16 @@ help : Makefile # Print commands help.
 ##
 ## Docker commands
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: logs shell-php shell-node install-local
+.PHONY: build down logs shell-php shell-node install-local prune up ps
+
+build:
+	$(DC) build
+
+down:
+	$(DC) down
+
+prune:
+	$(DC) down -v
 
 logs: ## View containers logs.
 	$(DC) logs -f $(filter-out $@,$(MAKECMDGOALS))
@@ -42,6 +51,12 @@ install-local: ## Install project on dev local project
 	$(MAKE) migration
 	$(EXEC_PHP) bin/console php bin/console app:legal-statuses:import
 	$(EXEC_PHP) bin/console doctrine:fixtures:load -n
+
+up:
+	$(DC) up -d --force-recreate
+
+ps:
+	$(DC) ps -a
 
 ##
 ## Symfony commands
